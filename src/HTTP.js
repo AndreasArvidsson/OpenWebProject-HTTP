@@ -1,3 +1,8 @@
+/**
+ * @author Andreas Arvidsson
+ * https://github.com/AndreasArvidsson/HTTP
+ */
+
 let _onStateChange = null;
 let _errorInterceptor = null;
 
