@@ -28,21 +28,21 @@ const promise = http.jsonp("data");
 ```javascript
 const id = "Fo%Bar";
 
-//Static request. All path string after the first is uri encoded.
+//Static request. All paths string after the first(base) one is uri encoded.
 const promise = HTTP.get("http://www.mysite.com/rest/data", id, "subpath");
 
-//Instance constructor. Base path is NOT uri encoded.
-const http = new HTTP("http://www.mysite.com/rest");
+//Instance constructor. All paths string after the first(base) one is uri encoded.
+const http = new HTTP("http://www.mysite.com", "rest");
 //Instance request. All path string are uri encoded.
 const promise = http.get("data", id, "subpath");
 //Instance request at base path.
 const promise = http.get();
 ```
 
-**Optional parameters**
+**Headers and query parameters**
 ```javascript
 //Headers. Flat object(key/value map)
-const headers: { Origin:  "http://www.mysite.com/" };
+const headers: { Origin:  "http://www.mysite.com" };
 
 //Query parameters. Object(key/value map) which supports multiple values per key.
 //?id=123&field=name&field=value
