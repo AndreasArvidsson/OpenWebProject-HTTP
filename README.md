@@ -43,11 +43,11 @@ const promise = http.get();
 **Headers and query parameters**
 ```javascript
 //Headers. Flat object(key/value map)
-const headers: { Origin:  "http://www.mysite.com" };
+const headers = { Origin:  "http://www.mysite.com" };
 
 //Query parameters. Object(key/value map) which supports multiple values per key.
 //?id=123&field=name&field=value
-const params: { id: "123", field: [ "name", "value" ] };
+const params = { id: "123", field: [ "name", "value" ] };
 
 //Can be used for static requests.
 const promise = HTTP.get("http://www.mysite.com/rest/data", { headers: headers, params: params });
