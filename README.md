@@ -58,7 +58,7 @@ const http = new HTTP("http://www.mysite.com/rest", { headers: headers, params: 
 const promise = http.get("data", { headers: headers, params: params });
 ```
 
-**Payload**
+**Payload**    
 Payload parameters are the same for post/put/patch.
 ```javascript
 //Data with specified content type.
@@ -71,7 +71,7 @@ const promise = http.post({ data: { a: 1, b: 2 } })
 const promise = http.post({ json: { a: 1, b: 2 } })
 ```
 
-**Response**
+**Response**    
 Resolved promise returns payload.
 ```javascript
 http.get().then(
@@ -84,9 +84,9 @@ http.get().then(
 );
 ```
 
-**Full response**
-Get a full response in both promise resolve and reject.
-Can be used in static request, constructor or instance request same as headers.
+**Full response**    
+Get a full response in both promise resolve and reject.    
+Can be used in static request, constructor or instance request same as headers.    
 ```javascript
 http.get({ fullResponse: true }).then(
     function(response) {
@@ -108,8 +108,8 @@ http.get({ fullResponse: true }).then(
 }
 ```
 
-**Response type**
-Specify response type. Can be used to request binary data
+**Response type**    
+Specify response type. Can be used to request binary data    
 Can be used in static request, constructor or instance request same as headers.
 ```javascript
 http.get({ responseType: "blob"  }).then(
@@ -119,7 +119,7 @@ http.get({ responseType: "blob"  }).then(
 );
 ```
 
-**On state change event**
+**On state change event**    
 Register callback to trigger on every state change on the underlying XMLHttp​Request​.    
 0 	UNSENT              Client has been created. open() not called yet.    
 1 	OPENED 	            open() has been called.    
@@ -134,9 +134,9 @@ HTTP.setOnStateChange(function (readyState) {
 });
 ```
 
-**On error event**
-Register callback to trigger on all rejected/failed requests.
-Useful to display error messages, log problem or refresh authorization tokens.
+**On error event**    
+Register callback to trigger on all rejected/failed requests.    
+Useful to display error messages, log problem or refresh authorization tokens.    
 Supports repeat of request.
 ```javascript
 HTTP.setErrorInterceptor(function(response, repeat, resolve, reject) {
@@ -156,7 +156,7 @@ HTTP.setErrorInterceptor(function(response, repeat, resolve, reject) {
 });
 ```
 
-**Instance functions**
+**Instance functions**    
 Functions to modify an instance.
 ```javascript
 //Returns the current url as an string.
