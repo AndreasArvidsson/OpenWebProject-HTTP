@@ -119,13 +119,30 @@ http.get({ responseType: "blob"  }).then(
 );
 ```
 
+**Instance functions**    
+Functions to get or set options for an instance.
+```javascript
+//Returns the current url as an string.
+const url = http.getUrl();
+//Set a specific header value.
+http.setHeader(headerName, headerValue);
+//Set multiple header values.
+http.setHeaders({ headerName1: headerValue1, headerName2: headerValue2 });
+//Set full response true or false.
+http.setFullResponse(true);
+//Set response type.
+http.setResponseType("blob");
+//Crease a sub instance with additional path parameters. Each path is uri encoded.
+const httpSub = http.path("subpath", id, "anotherPath");
+```
+
 **On state change event**    
 Register callback to trigger on every state change on the underlying XMLHttp​Request​.    
-0 	UNSENT              Client has been created. open() not called yet.    
-1 	OPENED 	            open() has been called.    
-2 	HEADERS_RECEIVED 	send() has been called, and headers and status are available.    
-3 	LOADING 	        Downloading; responseText holds partial data.    
-4 	DONE 	            The operation is complete.    
+0 	UNSENT - Client has been created. open() not called yet.    
+1 	OPENED - open() has been called.    
+2 	HEADERS_RECEIVED - send() has been called, and headers and status are available.    
+3 	LOADING - Downloading; responseText holds partial data.    
+4 	DONE - The operation is complete.    
 ```javascript
 HTTP.setOnStateChange(function (readyState) {
     switch (readyState) {
@@ -147,28 +164,12 @@ HTTP.setErrorInterceptor(function(response, repeat, resolve, reject) {
             //Repeat request with new access token.
             const accessToken = Auth.getAccessToken();
             const headers = { authorization: accessToken };
-            //Repeat request to try again with new access token. Repeat supports new headers and pararms.
+            //Repeat supports new headers and pararms.
             repeat({headers: headers}).then(resolve, reject);
         });
-        //Stop other reject callback. Only applied for first time. If repeat fails the promise will reject.
+        //Stop other reject callback. Only applied for first time. 
+        //If repeat fails the promise will reject.
         return false;
     }
 });
-```
-
-**Instance functions**    
-Functions to modify an instance.
-```javascript
-//Returns the current url as an string.
-const url = http.getUrl();
-//Set a specific header value.
-http.setHeader(headerName, headerValue);
-//Set multiple header values.
-http.setHeaders({ headerName1: headerValue1, headerName2: headerValue2 });
-//Set full response true or false.
-http.setFullResponse(true);
-//Set response type.
-http.setResponseType("blob");
-//Crease a sub instance with additional path parameters. Each path is uri encoded.
-const httpSub = http.path("subpath", id, "anotherPath");
 ```
