@@ -1,6 +1,6 @@
 # HTTP
+HTTP client for JavaScript    
 https://github.com/AndreasArvidsson/HTTP    
-HTTP client for JavaScript
 
 **Static requests**
 ```javascript
