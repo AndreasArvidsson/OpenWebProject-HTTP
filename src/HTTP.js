@@ -213,7 +213,7 @@ function http(method, props, ignoreErrorInterceptor) {
             if (this.readyState !== 1) {
                 onStateChange(this.readyState);
             }
-            else if (this.readyState === 4) {
+            if (this.readyState === 4) {
                 if (this.status >= 200 && this.status < 300 || this.status === 304) {
                     resolve(getResponse(this, props.fullResponse));
                 }
