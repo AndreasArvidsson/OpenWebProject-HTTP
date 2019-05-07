@@ -38,7 +38,7 @@ function getQueryParmsString(params, jsonpCallback) {
             }
         }
         //Single value
-        else if (value !== undefined && value !== null){
+        else if (value !== undefined && value !== null) {
             parts.push(key + "=" + encodeURIComponent(value));
         }
     }
@@ -81,7 +81,7 @@ function calculateContentType(props) {
         return "application/json";
     }
     if (props.data) {
-        switch(typeof props.data) {
+        switch (typeof props.data) {
             case "boolean":
             case "number":
             case "string":
@@ -133,7 +133,7 @@ function getData(xmlhttp) {
     //Check if text response is json.
     const contentType = xmlhttp.getResponseHeader("Content-Type");
     if (contentType && contentType.includes("json")) {
-        return JSON.parse(xmlhttp.responseText); 
+        return JSON.parse(xmlhttp.responseText);
     }
     //Return default response.
     return xmlhttp.response;
@@ -165,10 +165,10 @@ function getJsonpFullResonse(data, url) {
         statusText: data !== null ? "OK" : "Bad Request",
         responseText: null,
         data: data,
-        headers: function() {
+        headers: function () {
             return {};
         },
-        getHeader: function() {
+        getHeader: function () {
             return null;
         }
     };
@@ -176,21 +176,21 @@ function getJsonpFullResonse(data, url) {
 
 function getJsonpResonse(data, url, fullResponse) {
     if (fullResponse) {
-       return getJsonpFullResonse(data, url);
+        return getJsonpFullResonse(data, url);
     }
     return data;
 }
 
 function jsonp(props) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         const callbackName = "jsonpCallback_" + Math.round(100000 * Math.random());
         const url = getFullurl(props, callbackName);
         const script = document.createElement("script");
         script.src = url;
-        script.onerror = function() {
+        script.onerror = function () {
             reject(getJsonpFullResonse(null, url));
         };
-        window[callbackName] = function(data) {
+        window[callbackName] = function (data) {
             delete window[callbackName];
             document.body.removeChild(script);
             resolve(getJsonpResonse(data, url, props.fullResponse));
@@ -199,23 +199,30 @@ function jsonp(props) {
     });
 }
 
+function onStateChange(readyState) {
+    if (_onStateChange) {
+        _onStateChange(readyState);
+    }
+}
+
 function http(method, props, ignoreErrorInterceptor) {
     return new Promise(function (resolve, reject) {
         const xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new window.ActiveXObject("Microsoft.XMLHTTP");
         xmlhttp.onreadystatechange = function () {
-            if (_onStateChange) {
-                _onStateChange(this.readyState);
+            //On IE state 1 is incorrectly sendt twice. Send it below once instead.
+            if (this.readyState !== 1) {
+                onStateChange(this.readyState);
             }
-            if (this.readyState === 4) {
+            else if (this.readyState === 4) {
                 if (this.status >= 200 && this.status < 300 || this.status === 304) {
                     resolve(getResponse(this, props.fullResponse));
                 }
                 else {
                     const error = getFullResponse(this);
                     if (_errorInterceptor && !ignoreErrorInterceptor) {
-                        const repeat = function(newProps) {
+                        const repeat = function (newProps) {
                             return http(method, updateProps(props, newProps), true);
-                        }
+                        };
                         //If error intereptor returns false dont't continue with rejection.
                         if (_errorInterceptor(error, repeat, resolve, reject) !== false) {
                             reject(error);
@@ -227,8 +234,8 @@ function http(method, props, ignoreErrorInterceptor) {
                 }
             }
         };
-        //responseType
         xmlhttp.open(method, getFullurl(props), true); //async = true
+        onStateChange(1);
         if (props.responseType) {
             xmlhttp.responseType = props.responseType;
         }
@@ -243,7 +250,7 @@ function parseArguments(args, allowData, result) {
             url: "",
             headers: {},
             params: {}
-        }
+        };
     }
     const urlParts = [];
     if (result.url) {
@@ -261,7 +268,7 @@ function parseArguments(args, allowData, result) {
     }
     result.url = urlParts.join("/");
 
-    if(typeof args[i] === "object") {
+    if (typeof args[i] === "object") {
         const obj = args[i];
         if (obj.headers) {
             mergeObjects(result.headers, obj.headers);
@@ -289,7 +296,7 @@ function parseArguments(args, allowData, result) {
                 result.data = obj.data;
             }
         }
-    }    
+    }
     return result;
 }
 
