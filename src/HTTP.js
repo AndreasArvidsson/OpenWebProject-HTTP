@@ -128,7 +128,7 @@ function updateProps(props, newProps) {
 function getData(xmlhttp) {
     //Already json in response.
     if (xmlhttp.responseType === "json") {
-        return xmlhttp.response
+        return xmlhttp.response;
     }
     //Check if text response is json.
     const contentType = xmlhttp.getResponseHeader("Content-Type");
@@ -136,7 +136,7 @@ function getData(xmlhttp) {
         return JSON.parse(xmlhttp.responseText); 
     }
     //Return default response.
-    return xmlhttp.response
+    return xmlhttp.response;
 }
 
 function getFullResponse(xmlhttp) {
@@ -392,8 +392,8 @@ export default class HTTP {
         if (this.url) {
             urlParts.push(this.url);
         }
-        for (const part of arguments) {
-            urlParts.push(encodeURIComponent(part));
+        for (const i in arguments) {
+            urlParts.push(encodeURIComponent(arguments[i]));
         }
         return new HTTP(urlParts.join("/"), this);
     }
