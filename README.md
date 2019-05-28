@@ -118,9 +118,20 @@ http.get({ fullResponse: true }).then(
 Specify response type. Can be used to request binary data    
 Can be used in static request, constructor or instance request same as headers.
 ```javascript
-http.get({ responseType: "blob"  }).then(
+http.get({ responseType: "blob" }).then(
     function(blob) {
         //Blob containing binary data
+    }
+);
+```
+
+**Cache**    
+Enable cache  
+Matches url and caches response.
+```javascript
+http.get({ cache: true }).then(
+    function(cachedResponse) {
+        //Response is fetched from cache.
     }
 );
 ```

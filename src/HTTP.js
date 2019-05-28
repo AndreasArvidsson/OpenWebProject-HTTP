@@ -5,6 +5,7 @@
 
 let _onStateChange = null;
 let _errorInterceptor = null;
+const _cache = {};
 
 function mergeObjects(target, source) {
     for (const i in source) {
@@ -23,11 +24,8 @@ function deepClone(obj) {
     return obj;
 }
 
-function getQueryParmsString(params, jsonpCallback) {
+function getQueryParmsString(params) {
     const parts = [];
-    if (jsonpCallback) {
-        parts.push("callback=" + jsonpCallback);
-    }
     for (const i in params) {
         const key = encodeURIComponent(i);
         const value = params[i];
@@ -45,8 +43,8 @@ function getQueryParmsString(params, jsonpCallback) {
     return parts.join("&");
 }
 
-function getFullurl(props, jsonpCallback) {
-    const queryString = getQueryParmsString(props.params, jsonpCallback);
+function getFullurl(props) {
+    const queryString = getQueryParmsString(props.params);
     if (queryString) {
         return props.url + "?" + queryString;
     }
@@ -181,10 +179,8 @@ function getJsonpResonse(data, url, fullResponse) {
     return data;
 }
 
-function jsonp(props) {
+function getJsonPromise(url, callbackName, props) {
     return new Promise(function (resolve, reject) {
-        const callbackName = "jsonpCallback_" + Math.round(100000 * Math.random());
-        const url = getFullurl(props, callbackName);
         const script = document.createElement("script");
         script.src = url;
         script.onerror = function () {
@@ -199,13 +195,29 @@ function jsonp(props) {
     });
 }
 
+function jsonp(props) {
+    const callbackName = "jsonpCallback_" + Math.round(100000 * Math.random());
+    const queryString = getQueryParmsString(props.params);
+    let fullUrl = props.url + "?callback=" + callbackName + (queryString ? "&" + queryString : "");
+    if (props.cache) {
+        const key = "jsonp" + props.url;
+        if (!_cache[key]) {
+            _cache[key] = getJsonPromise(fullUrl, callbackName, props);
+        }
+        return _cache[key];
+    }
+    else {
+        return getJsonPromise(fullUrl, callbackName, props);
+    }
+}
+
 function onStateChange(readyState) {
     if (_onStateChange) {
         _onStateChange(readyState);
     }
 }
 
-function http(method, props, ignoreErrorInterceptor) {
+function getHttpPromise(method, fullUrl, props, ignoreErrorInterceptor) {
     return new Promise(function (resolve, reject) {
         const xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new window.ActiveXObject("Microsoft.XMLHTTP");
         xmlhttp.onreadystatechange = function () {
@@ -234,7 +246,7 @@ function http(method, props, ignoreErrorInterceptor) {
                 }
             }
         };
-        xmlhttp.open(method, getFullurl(props), true); //async = true
+        xmlhttp.open(method, fullUrl, true); //async = true
         onStateChange(1);
         if (props.responseType) {
             xmlhttp.responseType = props.responseType;
@@ -242,6 +254,20 @@ function http(method, props, ignoreErrorInterceptor) {
         setHeaders(xmlhttp, props);
         send(xmlhttp, props);
     });
+}
+
+function http(method, props, ignoreErrorInterceptor) {
+    const fullUrl = getFullurl(props);
+    if (props.cache) {
+        const key = method + fullUrl;
+        if (!_cache[key]) {
+            _cache[key] = getHttpPromise(method, fullUrl, props, ignoreErrorInterceptor);
+        }
+        return _cache[key];
+    }
+    else {
+        return getHttpPromise(method, fullUrl, props, ignoreErrorInterceptor);
+    }
 }
 
 function parseArguments(args, allowData, result) {
@@ -288,6 +314,9 @@ function parseArguments(args, allowData, result) {
         if (obj.contentType) {
             result.contentType = obj.contentType;
         }
+        if (obj.cache) {
+            result.cache = obj.cache;
+        }
         if (allowData) {
             if (obj.json) {
                 result.json = obj.json;
@@ -305,6 +334,7 @@ function getInstanceBaseArguments(http) {
         url: http.url,
         fullResponse: http.fullResponse,
         responseType: http.responseType,
+        cache: http.cache,
         headers: deepClone(http.headers),
         params: deepClone(http.params)
     }
@@ -378,20 +408,29 @@ export default class HTTP {
 
     setHeader(key, value) {
         this.headers[key] = value;
+        return this;
     }
 
     setHeaders(headers) {
         for (const key in headers) {
             this.headers[key] = headers[key];
         }
+        return this;
     }
 
     setFullResponse(fullResponse) {
         this.fullResponse = fullResponse;
+        return this;
     }
 
     setResponseType(responseType) {
         this.responseType = responseType;
+        return this;
+    }
+
+    setCache(cache) {
+        this.cache = cache;
+        return this;
     }
 
     path() {
