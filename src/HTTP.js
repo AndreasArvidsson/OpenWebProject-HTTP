@@ -200,7 +200,7 @@ function jsonp(props) {
     const queryString = getQueryParmsString(props.params);
     let fullUrl = props.url + "?callback=" + callbackName + (queryString ? "&" + queryString : "");
     if (props.cache) {
-        const key = "jsonp" + props.url;
+        const key = "jsonp" + props.url + queryString;
         if (!_cache[key]) {
             _cache[key] = getJsonPromise(fullUrl, callbackName, props);
         }
