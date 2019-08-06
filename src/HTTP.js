@@ -258,13 +258,23 @@ function getHttpPromise(method, fullUrl, props, ignoreErrorInterceptor) {
 
 function http(method, props, ignoreErrorInterceptor) {
     const fullUrl = getFullurl(props);
+    //Use cache.
     if (props.cache) {
         const key = method + fullUrl;
-        if (!_cache[key]) {
-            _cache[key] = getHttpPromise(method, fullUrl, props, ignoreErrorInterceptor);
+        //Promise already in cache. Reuse it.
+        if (_cache[key]) {
+            return _cache[key];
         }
-        return _cache[key];
+        //Promise not in cache. Do http request and store in cache if resolved. Don't cache rejected promises.
+        else {
+            const promise = getHttpPromise(method, fullUrl, props, ignoreErrorInterceptor);
+            promise.then(function() {
+                _cache[key] = promise;
+            });
+            return promise;
+        }
     }
+    //Dont use cache.
     else {
         return getHttpPromise(method, fullUrl, props, ignoreErrorInterceptor);
     }
