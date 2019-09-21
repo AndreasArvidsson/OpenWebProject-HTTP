@@ -1,0 +1,22 @@
+{
+    "name": "owp.http",
+    "description": "HTTP client for JavaScript",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/AndreasArvidsson/OpenWebProject-HTTP.git"
+    },
+    "keywords": [
+        "http"
+    ],
+    "author": "Andreas Arvidsson",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/AndreasArvidsson/OpenWebProject-HTTP/issues"
+    },
+    "homepage": "https://github.com/AndreasArvidsson/OpenWebProject-HTTP"
+}
