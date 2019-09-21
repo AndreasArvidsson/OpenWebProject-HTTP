@@ -1,6 +1,6 @@
 /**
  * @author Andreas Arvidsson
- * https://github.com/AndreasArvidsson/HTTP
+ * https://github.com/AndreasArvidsson/OpenWebProject-HTTP
  */
 
 let _onStateChange = null;
