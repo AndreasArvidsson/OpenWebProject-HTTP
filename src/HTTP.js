@@ -268,9 +268,12 @@ function http(method, props, ignoreErrorInterceptor) {
         //Promise not in cache. Do http request and store in cache if resolved. Don't cache rejected promises.
         else {
             const promise = getHttpPromise(method, fullUrl, props, ignoreErrorInterceptor);
-            promise.then(function() {
-                _cache[key] = promise;
-            });
+            promise.then(
+                function() {
+                    _cache[key] = promise;
+                },
+                function () { }
+            );
             return promise;
         }
     }
