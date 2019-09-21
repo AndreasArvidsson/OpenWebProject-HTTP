@@ -14,8 +14,6 @@ npm install owp.http --save
 import HTTP from "owp.http";
 ```
 
-import HTTP from "./owp.http";
-
 **Static requests**
 ```javascript
 const promise = HTTP.get("http://www.mysite.com/rest/data");
