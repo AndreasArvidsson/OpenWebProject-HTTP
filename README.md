@@ -5,7 +5,7 @@
 HTTP is a simple and lightweight wrapper for the browsers native XMLHttpRequest functionality.    
 The purpose of this utility is to easiliy enable HTTP request without relying on a large framework. No matter if you have a simple standard JS app, uses jQuery or react framework you can make use of HTTP request in the same way.
 
-## installation and use
+## Installation and use
 ```
 npm install owp.http --save
 ```
