@@ -1,12 +1,11 @@
 # OpenWebProject HTTP
 
-HTTP client for JavaScript    
-https://github.com/AndreasArvidsson/OpenWebProject-HTTP 
+**HTTP client for JavaScript**
 
 HTTP is a simple and lightweight wrapper for the browsers native XMLHttpRequest functionality.    
 The purpose of this utility is to easiliy enable HTTP request without relying on a large framework. No matter if you have a simple standard JS app, uses jQuery or react framework you can make use of HTTP request in the same way.
 
-**installation and use**
+## installation and use
 ```
 npm install owp.http --save
 ```
@@ -14,7 +13,7 @@ npm install owp.http --save
 import HTTP from "owp.http";
 ```
 
-**Static requests**
+## Static requests
 ```javascript
 const promise = HTTP.get("http://www.mysite.com/rest/data");
 const promise = HTTP.delete("http://www.mysite.com/rest/data");
@@ -25,7 +24,7 @@ const promise = HTTP.patch("http://www.mysite.com/rest/data", { data: "Mydata" }
 const promise = HTTP.jsonp("http://www.mysite.com/rest/data");
 ```
 
-**Instance requests**
+## Instance requests
 ```javascript
 const http = new HTTP("http://www.mysite.com/rest");
 const promise = http.get("data");
@@ -37,7 +36,7 @@ const promise = http.patch("data", { data: "Mydata" });
 const promise = http.jsonp("data");
 ```
 
-**Path parameters**
+## Path parameters
 ```javascript
 const id = "Fo%Bar";
 
@@ -52,7 +51,7 @@ const promise = http.get("data", id, "subpath");
 const promise = http.get();
 ```
 
-**Headers and query parameters**
+## Headers and query parameters
 ```javascript
 //Headers. Flat object(key/value map)
 const headers = { Origin:  "http://www.mysite.com" };
@@ -71,7 +70,7 @@ const http = new HTTP("http://www.mysite.com/rest", { headers: headers, params: 
 const promise = http.get("data", { headers: headers, params: params });
 ```
 
-**Payload**    
+## Payload
 Payload parameters are the same for post/put/patch.
 ```javascript
 //Data with specified content type.
@@ -84,7 +83,7 @@ const promise = http.post({ data: { a: 1, b: 2 } })
 const promise = http.post({ json: { a: 1, b: 2 } })
 ```
 
-**Response**    
+## Response
 Resolved promise returns payload.
 ```javascript
 http.get().then(
@@ -97,7 +96,7 @@ http.get().then(
 );
 ```
 
-**Full response**    
+## Full response
 Get a full response in both promise resolve and reject.    
 Can be used in static request, constructor or instance request same as headers.    
 ```javascript
@@ -121,7 +120,7 @@ http.get({ fullResponse: true }).then(
 }
 ```
 
-**Response type**    
+## Response type
 Specify response type. Can be used to request binary data    
 Can be used in static request, constructor or instance request same as headers.
 ```javascript
@@ -132,7 +131,7 @@ http.get({ responseType: "blob" }).then(
 );
 ```
 
-**Cache**    
+## Cache
 Enable cache  
 Matches url and caches response.
 ```javascript
@@ -143,7 +142,7 @@ http.get({ cache: true }).then(
 );
 ```
 
-**Instance functions**    
+## Instance functions
 Functions to get or set options for an instance.
 ```javascript
 //Returns the current url as an string.
@@ -160,7 +159,7 @@ http.setResponseType("blob");
 const httpSub = http.path("subpath", id, "anotherPath");
 ```
 
-**On state change event**    
+## On state change event
 Register callback to trigger on every state change on the underlying XMLHttp​Request​.    
 0 	UNSENT - Client has been created. open() not called yet.    
 1 	OPENED - open() has been called.    
@@ -175,7 +174,7 @@ HTTP.setOnStateChange(function (readyState) {
 });
 ```
 
-**On error event**    
+## On error event
 Register callback to trigger on all rejected/failed requests.    
 Useful to display error messages, log problem or refresh authorization tokens.    
 Supports repeat of request.
