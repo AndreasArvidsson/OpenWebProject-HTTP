@@ -203,12 +203,13 @@ function jsonp(props) {
         const key = "jsonp" + props.url + queryString;
         if (!_cache[key]) {
             _cache[key] = getJsonPromise(fullUrl, callbackName, props);
+            _cache[key].catch(function () {
+                delete _cache[key];
+            });
         }
         return _cache[key];
     }
-    else {
-        return getJsonPromise(fullUrl, callbackName, props);
-    }
+    return getJsonPromise(fullUrl, callbackName, props);
 }
 
 function onStateChange(readyState) {
@@ -261,26 +262,18 @@ function http(method, props, ignoreErrorInterceptor) {
     //Use cache.
     if (props.cache) {
         const key = method + fullUrl;
-        //Promise already in cache. Reuse it.
-        if (_cache[key]) {
-            return _cache[key];
-        }
         //Promise not in cache. Do http request and store in cache if resolved. Don't cache rejected promises.
-        else {
-            const promise = getHttpPromise(method, fullUrl, props, ignoreErrorInterceptor);
-            promise.then(
-                function() {
-                    _cache[key] = promise;
-                },
-                function () { }
-            );
-            return promise;
+        if (!_cache[key]) {
+            _cache[key] = getHttpPromise(method, fullUrl, props, ignoreErrorInterceptor);
+            _cache[key].catch(function () {
+                delete _cache[key];
+            });
         }
+        //Promise already in cache.
+        return _cache[key];
     }
     //Dont use cache.
-    else {
-        return getHttpPromise(method, fullUrl, props, ignoreErrorInterceptor);
-    }
+    return getHttpPromise(method, fullUrl, props, ignoreErrorInterceptor);
 }
 
 function parseArguments(args, allowData, result) {
