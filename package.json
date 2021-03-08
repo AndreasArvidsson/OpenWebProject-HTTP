@@ -1,9 +1,15 @@
 {
     "name": "owp.http",
     "description": "HTTP client for JavaScript",
-    "version": "1.0.3",
-    "main": "index.js",
-    "scripts": {},
+    "version": "2.0.0",
+    "files": [
+        "src/*"
+    ],
+    "main": "src/index.js",
+    "scripts": {
+        "start": "webpack serve --config test/webpack.config.js --mode development --port 9090 --open",
+        "pub": "node node_modules/publish-flatten --flatten src --strip scripts --strip devDependencies"
+    },
     "keywords": [
         "http",
         "Open Web Project",
@@ -18,5 +24,18 @@
     },
     "bugs": {
         "url": "https://github.com/AndreasArvidsson/OpenWebProject-HTTP/issues"
+    },
+    "devDependencies": {
+        "webpack": "latest",
+        "webpack-cli": "latest",
+        "webpack-dev-server": "latest",
+        "html-webpack-plugin": "latest",
+        "babel-loader": "latest",
+        "@babel/core": "latest",
+        "eslint-loader": "latest",
+        "eslint": "latest",
+        "babel-eslint": "latest",
+        "lodash": "latest",
+        "publish-flatten": "latest"
     }
 }

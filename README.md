@@ -196,3 +196,9 @@ HTTP.setErrorInterceptor(function(response, repeat, resolve, reject) {
     }
 });
 ```
+
+
+
+```javascript
+HTTP.get("http://www.mysite.com/rest", { params: { id:123}})
+```
