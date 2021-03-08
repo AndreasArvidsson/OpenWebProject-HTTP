@@ -87,7 +87,7 @@ const doXhr = (url, method, {
     }
 
     xhr.setRequestHeader(
-        "Content-Type",
+        "content-type",
         calcContentType(contentType, json, data)
     );
 
@@ -160,8 +160,8 @@ const doDownload = async (method, response, rest) => {
 
     //First collecct needed data in case the responseInterceptor removes it.
     const blob = response.data;
-    const filename = rest.filename || calcFilename(response);
     const contentType = response.headers["content-type"];
+    const filename = rest.filename || calcFilename(response, contentType);
 
     response = await evalResponse({ method, response, ...rest });
 
@@ -273,10 +273,25 @@ const getHeaders = (xhr) => {
     return result;
 };
 
-const calcFilename = (response) => {
+const calcFilename = (response, contentType) => {
+    //First look for content-disposition header.
     const disposition = response.headers["content-disposition"];
     if (disposition) {
         const i = disposition.indexOf("filename=") + "filename=".length + 1;
         return disposition.substring(i, disposition.length - 1);
+    }
+    //Then use last part of url.
+    let url = response.url;
+    const i = url.indexOf("?");
+    if (i > -1) {
+        url = url.substring(0, i);
+    }
+    const parts = url.split(/\//).filter(Boolean);
+    if (parts.length) {
+        const name = parts[parts.length - 1];
+        //If content type is json make sure it has a json ending.
+        const ext = contentType.includes("json")
+            && !name.toLowerCase().endsWith(".json") ? ".json" : "";
+        return name + ext;
     }
 };
