@@ -3,12 +3,10 @@ import HTTP from "../src/index";
 export default async () => {
     console.log("test/testHTTP.js")
 
-    const options = {
+    HTTP.useOptions({
         cache: true,
         params: { a: 1, b: 2, c: 3 }
-    }
-
-    HTTP.options(options);
+    });
 
     const http = new HTTP("https://petstore.swagger.io", "v2", {
         cache: false,
@@ -25,7 +23,7 @@ export default async () => {
         requestInterceptor: r => {
             r.params.g = 7;
 
-            console.log("options", JSON.stringify(options, null, 4));
+            console.log("HTTP.options", JSON.stringify(HTTP.options, null, 4));
             console.log("http.options", JSON.stringify(http.options, null, 4));
             console.log("sub.options", JSON.stringify(sub.options, null, 4));
             console.log("sub.request", JSON.stringify(r, null, 4));

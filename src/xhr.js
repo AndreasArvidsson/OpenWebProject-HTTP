@@ -1,5 +1,5 @@
 import _cache from "./cache";
-import register from "./register";
+import use from "./use";
 import deepClone from "./deepClone";
 
 //1) Update request using interceptor.
@@ -154,8 +154,7 @@ const evalResponse = async ({ fullResponse, response, responseInterceptor }) => 
 
 //5.2) Download response blob.
 const doDownload = async (method, response, rest) => {
-    const downloadjs = register.get("downloadjs");
-    if (!downloadjs) {
+    if (!use.downloadjs) {
         throw Error("http.download. Requires http-get");
     }
 
@@ -167,7 +166,7 @@ const doDownload = async (method, response, rest) => {
     response = await evalResponse({ method, response, ...rest });
 
     //Last download in case of responseInterceptor throws exception.
-    downloadjs(blob, filename, contentType);
+    use.downloadjs(blob, filename, contentType);
 
     return response;
 };

@@ -3,5 +3,5 @@ import testXhr from "./testXhr";
 
 (async () => {
     await testXhr();
-    await testHTTP()
+    await testHTTP();
 })();

@@ -1,4 +1,4 @@
-import xhr from "../src/xhr";
+import xhr from "../src/XHR";
 import Assert from "./Assert";
 
 const url = "https://petstore.swagger.io/v2/swagger.json";

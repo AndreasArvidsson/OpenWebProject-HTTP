@@ -3,12 +3,10 @@
  * https://github.com/AndreasArvidsson/OpenWebProject-HTTP
  */
 
-import XHR from "./XHR";
 import deepClone from "./deepClone";
+import XHR from "./XHR";
 
-const classOptions = {};
-
-export default class HTTP {
+class HTTP {
 
     static get(...args) {
         return staticXhr("GET", args);
@@ -32,8 +30,8 @@ export default class HTTP {
         return staticXhr("JSONP", args);
     }
 
-    static options(options) {
-        mergeOptions(classOptions, options);
+    static useOptions(options) {
+        mergeOptions(HTTP.options, options);
     }
 
     constructor(...args) {
@@ -76,7 +74,9 @@ export default class HTTP {
 
 }
 
-export { default as register } from "./register";
+HTTP.options = {};
+
+export default HTTP;
 
 const staticXhr = (method, args) => {
     const options = constructOptions(args);
@@ -95,7 +95,7 @@ const constructOptions = (args) => {
         params: {},
         headers: {}
     };
-    mergeOptions(options, classOptions);
+    mergeOptions(options, HTTP.options);
     parseArguments(options, args, true);
     return options;
 }
