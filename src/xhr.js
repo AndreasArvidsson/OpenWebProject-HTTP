@@ -1,5 +1,6 @@
 import _cache from "./cache";
 import register from "./register";
+import deepClone from "./deepClone";
 
 //1) Update request using interceptor.
 export default async ({ requestInterceptor, ...request }) => {
@@ -26,18 +27,18 @@ const evaluateRequest = async ({
         url = `${url}?${queryString}`;
     }
 
-    let promise;
+    let response;
     if (cache) {
-        promise = _cache.get(
+        const res = await _cache.get(
             method + url,
             () => performRequest(url, method, !!queryString, rest)
         );
+        //Make sure each hit of the cache resturns a unique copy.
+        response = deepClone(res);
     }
     else {
-        promise = performRequest(url, method, !!queryString, rest);
+        response = await performRequest(url, method, !!queryString, rest);
     }
-
-    const response = await promise;
 
     if (rest.download) {
         return doDownload(method, response, rest);

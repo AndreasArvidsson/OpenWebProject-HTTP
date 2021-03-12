@@ -3,106 +3,123 @@
  * https://github.com/AndreasArvidsson/OpenWebProject-HTTP
  */
 
-import xhr from "./xhr";
+import XHR from "./XHR";
+import deepClone from "./deepClone";
 
 const classOptions = {};
 
-
 export default class HTTP {
 
-    static get(url, ...args) {
-        return http("GET", parseInitArgs(url, args));
+    static get(...args) {
+        return staticXhr("GET", args);
     }
-    static delete(url, ...args) {
-        return http("DELETE", parseInitArgs(url, args));
+    static delete(...args) {
+        return staticXhr("DELETE", args);
     }
-    static head(url, ...args) {
-        return http("HEAD", parseInitArgs(url, args));
+    static head(...args) {
+        return staticXhr("HEAD", args);
     }
-    static put(url, ...args) {
-        return http("PUT", parseInitArgs(url, args));
+    static put(...args) {
+        return staticXhr("PUT", args);
     }
-    static patch(url, ...args) {
-        return http("PATCH", parseInitArgs(url, args));
+    static patch(...args) {
+        return staticXhr("PATCH", args);
     }
-    static post(url, ...args) {
-        return http("POST", parseInitArgs(url, args));
+    static post(...args) {
+        return staticXhr("POST", args);
     }
-    static jsonp(url, ...args) {
-        return http("JSONP", parseInitArgs(url, args));
+    static jsonp(...args) {
+        return staticXhr("JSONP", args);
     }
 
     static options(options) {
         mergeOptions(classOptions, options);
     }
 
-    constructor(url, ...args) {
-        //Url is options from parent instance.
-        if (typeof url === "object") {
-            this.options = parseArguments(url, args);
+    constructor(...args) {
+        //Sub instance called internally by path().
+        if (args[0] instanceof HTTP) {
+            this.options = deepClone(args[0].options);
+            parseArguments(this.options, args[1]);
         }
+        //Normal instance created by user.
         else {
-            this.options = parseInitArgs(url, args);
+            this.options = constructOptions(args);
         }
     }
 
     get(...args) {
-        return http("GET", parseArguments(this.options, args));
+        return xhr("GET", this, args);
     }
     delete(...args) {
-        return http("DELETE", parseArguments(this.options, args));
+        return xhr("DELETE", this, args);
     }
     head(...args) {
-        return http("HEAD", parseArguments(this.options, args));
+        return xhr("HEAD", this, args);
     }
     put(...args) {
-        return http("PUT", parseArguments(this.options, args));
+        return xhr("PUT", this, args);
     }
     patch(...args) {
-        return http("PATCH", parseArguments(this.options, args));
+        return xhr("PATCH", this, args);
     }
     post(...args) {
-        return http("POST", parseArguments(this.options, args));
+        return xhr("POST", this, args);
     }
     jsonp(...args) {
-        return http("JSONP", parseArguments(this.options, args));
+        return xhr("JSONP", this, args);
     }
 
     path(...args) {
-        return new HTTP(this.options, ...args);
+        return new HTTP(this, args);
     }
 
-};
+}
 
 export { default as register } from "./register";
 
-const http = (method, options) => {
-    return xhr({ method, ...options });
+const staticXhr = (method, args) => {
+    const options = constructOptions(args);
+    return XHR({ method, ...options });
 };
 
-const parseInitArgs = (url, args) => {
+const xhr = (method, http, args) => {
+    const options = deepClone(http.options);
+    parseArguments(options, args);
+    return XHR({ method, ...options });
+};
+
+const constructOptions = (args) => {
     const options = {
-        url,
+        url: undefined,
         params: {},
         headers: {}
     };
     mergeOptions(options, classOptions);
-    return parseArguments(options, args);
+    parseArguments(options, args, true);
+    return options;
 }
 
-const parseArguments = (options, args) => {
-    const res = deepClone(options);
-    const urlParts = [res.url];
+const parseArguments = (options, args, dontEncodeFirstString = false) => {
+    const urlParts = [];
+    if (options.url !== undefined) {
+        urlParts.push(options.url);
+    }
     args.forEach(arg => {
         if (typeof arg === "object") {
-            mergeOptions(res, arg);
+            mergeOptions(options, arg);
         }
         else {
-            urlParts.push(encodeURIComponent(arg));
+            if (dontEncodeFirstString) {
+                dontEncodeFirstString = false;
+                urlParts.push(arg);
+            }
+            else {
+                urlParts.push(encodeURIComponent(arg));
+            }
         }
     });
-    res.url = urlParts.join("/");
-    return res;
+    options.url = urlParts.join("/");
 };
 
 const mergeOptions = (target, source) => {
@@ -131,15 +148,4 @@ const mergeOptions = (target, source) => {
         }
     }
     return target;
-};
-
-const deepClone = (obj) => {
-    if (typeof obj === "object" && obj !== null) {
-        const res = Array.isArray(obj) ? [] : {};
-        for (const i in obj) {
-            res[i] = deepClone(obj[i]);
-        }
-        return res;
-    }
-    return obj;
 };
