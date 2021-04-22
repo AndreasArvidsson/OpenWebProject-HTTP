@@ -140,6 +140,7 @@ const evalResponse = async ({ fullResponse, response, responseInterceptor }) => 
         if (response instanceof Promise) {
             return response;
         }
+        //Return ok response.
         else if (ok) {
             return response;
         }

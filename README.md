@@ -15,26 +15,55 @@ import HTTP from "owp.http";
 
 ## Static requests
 ```javascript
-const promise = HTTP.get("http://www.mysite.com/rest/data");
-const promise = HTTP.delete("http://www.mysite.com/rest/data");
-const promise = HTTP.head("http://www.mysite.com/rest/data");
-const promise = HTTP.post("http://www.mysite.com/rest/data", { data: "Mydata" });
-const promise = HTTP.put("http://www.mysite.com/rest/data", { data: "Mydata" });
-const promise = HTTP.patch("http://www.mysite.com/rest/data", { data: "Mydata" });
-const promise = HTTP.jsonp("http://www.mysite.com/rest/data");
+HTTP.useOptions(options);
+const promise = HTTP.get("http://www.mysite.com/rest/data", options);
+const promise = HTTP.delete("http://www.mysite.com/rest/data", options);
+const promise = HTTP.head("http://www.mysite.com/rest/data", options);
+const promise = HTTP.post("http://www.mysite.com/rest/data", options);
+const promise = HTTP.put("http://www.mysite.com/rest/data", options);
+const promise = HTTP.patch("http://www.mysite.com/rest/data", options);
+const promise = HTTP.jsonp("http://www.mysite.com/rest/data", options);
 ```
 
 ## Instance requests
 ```javascript
-const http = new HTTP("http://www.mysite.com/rest");
-const promise = http.get("data");
-const promise = http.delete("data");
-const promise = http.head("data");
-const promise = http.post("data", { data: "Mydata" });
-const promise = http.put("data", { data: "Mydata" });
-const promise = http.patch("data", { data: "Mydata" });
-const promise = http.jsonp("data");
+HTTP.useOptions(options);
+const http = new HTTP("http://www.mysite.com/rest", options);
+const promise = http.get("data", options);
+const promise = http.delete("data", options);
+const promise = http.head("data", options);
+const promise = http.post("data", options);
+const promise = http.put("data", options);
+const promise = http.patch("data", options);
+const promise = http.jsonp("data", options);
 ```
+
+## Options
+Name | Description
+--- | ----
+headers | Headers
+params | Query parameters
+data | Data payload
+json | JSON data payload
+fullResponse | Set to true to get full response
+contentType | Media type(MIME) for data payload
+responseType | Type for response data
+cache | Set to true to cache responses
+stateChangeInterceptor | State change interceptor callback
+requestInterceptor | Request interceptor callback
+responseInterceptor | Response interceptor callback
+download | Set to true to download response data
+filename | Filename for downloaded file
+
+### Options inheritence
+* Add options to the class with ```useOptions(options)```
+    - Inherits NO options
+* Add options to the static request ```HTTP.get("URL", options)```
+    - Inherits CLASS options
+* Add options to the instance ```new HTTP("URL", options)```
+    - Inherits CLASS options
+* Add options to the instance request ```http.get("PATH", options)```
+    - Inherits INSTANCE options
 
 ## Path parameters
 ```javascript
@@ -86,119 +115,102 @@ const promise = http.post({ json: { a: 1, b: 2 } })
 ## Response
 Resolved promise returns payload.
 ```javascript
-http.get().then(
-    function(response) {
+http.get()
+    .then(function(response) {
         //Response from server if promise resolved(request succeeded).
-    },
-    function(error) {
+    })
+    .catch(function(error) {
         //Full response object if promise rejected(request failed). Se  below for description of full response.
-    }
-);
+    });
 ```
 
 ## Full response
-Get a full response in both promise resolve and reject.    
-Can be used in static request, constructor or instance request same as headers.    
+Get a full response in both promise resolve and reject.
 ```javascript
-http.get({ fullResponse: true }).then(
-    function(response) {
+http.get({ fullResponse: true })
+    .then(function(response) {
         //Full response returned.
-    }
-);
+    });
+
 //Full response format.
 {
+    ok: true,
     url: "http://www.mysite.com/rest/data?id=123",
-    statusCode: 200,
+    status: 200,
     statusText: "OK",
-    responseText: "{ value: 5 }",
+    text: "{ value: 5 }",
     //Data is the same value that is returned in a simple(non full) response.
     data: { value: 5 },
-    //Returns object with headers
-    headers: function () {}, 
-    //Returns value for single header name
-    getHeader: function (headerName) {}
+    //Object with headers
+    headers: { }
 }
 ```
 
 ## Response type
 Specify response type. Can be used to request binary data    
-Can be used in static request, constructor or instance request same as headers.
 ```javascript
-http.get({ responseType: "blob" }).then(
-    function(blob) {
+http.get({ responseType: "blob" })
+    .then(function(blob) {
         //Blob containing binary data
-    }
-);
+    });
 ```
 
 ## Cache
-Enable cache  
-Matches url and caches response.
+Enable cache. Matches method+url and caches response.
 ```javascript
-http.get({ cache: true }).then(
-    function(cachedResponse) {
+http.get({ cache: true })
+    .then(function(cachedResponse) {
         //Response is fetched from cache.
-    }
-);
+    });
 ```
 
-## Instance functions
-Functions to get or set options for an instance.
-```javascript
-//Returns the current url as an string.
-const url = http.getUrl();
-//Set a specific header value.
-http.setHeader(headerName, headerValue);
-//Set multiple header values.
-http.setHeaders({ headerName1: headerValue1, headerName2: headerValue2 });
-//Set full response true or false.
-http.setFullResponse(true);
-//Set response type.
-http.setResponseType("blob");
-//Crease a sub instance with additional path parameters. Each path is uri encoded.
-const httpSub = http.path("subpath", id, "anotherPath");
-```
-
-## On state change event
-Register callback to trigger on every state change on the underlying XMLHttp​Request​.    
+## State change interceptor
+Callback to trigger on every state change on the underlying XMLHttp​Request​.    
 0 	UNSENT - Client has been created. open() not called yet.    
 1 	OPENED - open() has been called.    
 2 	HEADERS_RECEIVED - send() has been called, and headers and status are available.    
 3 	LOADING - Downloading; responseText holds partial data.    
 4 	DONE - The operation is complete.    
 ```javascript
-HTTP.setOnStateChange(function (readyState) {
+stateChangeInterceptor: function (readyState) {
     switch (readyState) {
         //readyState = [0, 4]
     }
-});
+};
 ```
 
-## On error event
-Register callback to trigger on all rejected/failed requests.    
-Useful to display error messages, log problem or refresh authorization tokens.    
-Supports repeat of request.
+## Request interceptor
+Callback to format/update request. Useful for updating auth credentials.
 ```javascript
-HTTP.setErrorInterceptor(function(response, repeat, resolve, reject) {
-    //Unauthorized 
-    if (response.statusCode === 401) {
-        //Try to refesh access token.
-        Auth.refresh().then(function() {
-            //Repeat request with new access token.
-            const accessToken = Auth.getAccessToken();
-            const headers = { authorization: accessToken };
-            //Repeat supports new headers and pararms.
-            repeat({headers: headers}).then(resolve, reject);
-        });
-        //Stop other reject callback. Only applied for first time. 
-        //If repeat fails the promise will reject.
-        return false;
+requestInterceptor: function(request: object) {
+    //Update auth credentials
+    request.headers.Authorization = "...";
+    //Return updated request
+    return request;
+    //Or return Promise.
+    return Promise.resolve(request);
+    //Returning rejected promise rejects the entire http request.
+    return Promise.reject("Error");
+}
+```
+
+## Response interceptor
+Callback to format/update response. Useful for logging errors.
+```javascript
+responseInterceptor: function(response: object) {
+    //Change response
+    if (response.data === null) {
+        response.data = "No Data, but ok";
     }
-});
-```
-
-
-
-```javascript
-HTTP.get("http://www.mysite.com/rest", { params: { id:123}})
+    //Log errors
+    if (!response.ok) {
+        console.error(response.statusText);
+    }
+    //Return updated response.
+    return response;
+    //Or return Promise.
+    return Promise.resolve(response);
+    //Returning rejected promise rejects the entire http request.
+    return Promise.reject("Error");
+}
 ```
