@@ -156,7 +156,7 @@ const evalResponse = async ({ fullResponse, response, responseInterceptor }) => 
 //5.2) Download response blob.
 const doDownload = async (method, response, rest) => {
     if (!use.downloadjs) {
-        throw Error("http.download. Requires http-get");
+        throw "owp.http: Download option requires owp.http-get";
     }
 
     //First collecct needed data in case the responseInterceptor removes it.
