@@ -1,7 +1,7 @@
 {
     "name": "owp.http",
     "description": "HTTP client for JavaScript",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "files": [
         "src/*"
     ],

@@ -4,7 +4,7 @@
  */
 
 import deepClone from "./deepClone";
-import XHR from "./XHR";
+import XHR from "./xhr";
 
 class HTTP {
 
