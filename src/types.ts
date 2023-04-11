@@ -1,8 +1,8 @@
 export interface Options {
     requestInterceptor?: (request: Request) => Request | Promise<Request>;
-    responseInterceptor?: (response: Response) => Response | Promise<Response>;
+    responseInterceptor?: (response: Response) => unknown | Promise<unknown>;
     stateChangeInterceptor?: (readyState: number) => void;
-    params?: Record<string, string>;
+    params?: Record<string, Param | Param[]>;
     headers?: Record<string, string>;
     cache?: boolean;
     download?: boolean;
@@ -16,12 +16,10 @@ export interface Options {
 
 export interface InternalOptions extends Options {
     url: string;
-    params: Record<string, string>;
-    headers: Record<string, string>;
 }
 
 export interface Request extends InternalOptions {
-    method: Method;
+    method?: Method;
 }
 
 export interface Response {
@@ -34,5 +32,7 @@ export interface Response {
     data: unknown;
 }
 
+type Primary = string | number | boolean;
+export type Param = Primary | null;
 export type Method = "GET" | "DELETE" | "HEAD" | "PUT" | "PATCH" | "POST" | "JSONP";
-export type Arg = string | number | boolean | Options;
+export type Arg = Primary | Options;

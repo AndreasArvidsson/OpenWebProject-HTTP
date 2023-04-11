@@ -1,6 +1,6 @@
 import cloneDeep from "lodash.clonedeep";
 import _cache from "./cache";
-import { Request, Response } from "./types";
+import { Method, Param, Request, Response } from "./types";
 import use from "./use";
 
 //1) Update request using interceptor.
@@ -13,10 +13,10 @@ export default async ({ requestInterceptor, ...request }: Request) => {
 
 //2) Evaluate request. Check in cache.
 async function evaluateRequest(request: Request) {
-    const { method } = request;
+    const { params, method = "GET" } = request;
     let { url } = request;
 
-    const queryString = calcQueryParmsString(request.params);
+    const queryString = params ? calcQueryParmsString(params) : "";
     if (queryString) {
         url = `${url}?${queryString}`;
     }
@@ -42,7 +42,7 @@ async function evaluateRequest(request: Request) {
 //3) Perform request. Actually perform an external action.
 function performRequest(
     url: string,
-    method: string,
+    method: Method,
     paramsUsed: boolean,
     request: Request
 ): Promise<Response> {
@@ -55,7 +55,7 @@ function performRequest(
 //4.1) Perform HTTP request.
 function doXhr(
     url: string,
-    method: string,
+    method: Method,
     { data, json, contentType, responseType, headers, download, stateChangeInterceptor }: Request
 ): Promise<Response> {
     return new Promise((resolve) => {
@@ -123,15 +123,17 @@ function doJsonp(url: string, paramsUsed: boolean, request: Request): Promise<Re
 }
 
 //5.1) Evaluate response. Update with interceptor.
-async function evalResponse(request: Request, response: Response): Promise<unknown> {
+function evalResponse(request: Request, response: Response): unknown {
     //Response based on interceptor.
     if (request.responseInterceptor) {
-        response = await Promise.resolve(request.responseInterceptor(response));
+        return request.responseInterceptor(response);
     }
+
     //Response based on 'fullResponse'
     if (response.ok) {
         return request.fullResponse ? response : response.data;
     }
+
     //Rejection always gets the full response.
     throw response;
 }
@@ -186,7 +188,7 @@ function calcContentType(contentType?: string, json?: unknown, data?: string): s
     return "application/x-www-form-urlencoded; charset=UTF-8";
 }
 
-function calcQueryParmsString(params: Record<string, string | string[]>): string {
+function calcQueryParmsString(params: Record<string, Param | Param[]>): string {
     const parts = [];
     for (const i in params) {
         const key = encodeURIComponent(i);
@@ -194,11 +196,13 @@ function calcQueryParmsString(params: Record<string, string | string[]>): string
         //Array of values
         if (Array.isArray(value)) {
             for (const item of value) {
-                parts.push(`${key}=${encodeURIComponent(item)}`);
+                if (item != null) {
+                    parts.push(`${key}=${encodeURIComponent(item)}`);
+                }
             }
         }
         //Single value
-        else if (value !== undefined && value != null) {
+        else if (value != null) {
             parts.push(`${key}=${encodeURIComponent(value)}`);
         }
     }

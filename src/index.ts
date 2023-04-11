@@ -9,7 +9,7 @@ import XHR from "./xhr";
 
 class HTTP {
     static options: Options = {};
-    private options: InternalOptions;
+    options: InternalOptions;
 
     static get(url: string, ...args: Arg[]) {
         return staticXhr("GET", url, args);
