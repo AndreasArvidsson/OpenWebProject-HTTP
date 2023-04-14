@@ -2,7 +2,7 @@ import esbuild from "esbuild";
 
 (async () => {
     const ctx = await esbuild.context({
-        entryPoints: ["test/testXhr.ts"],
+        entryPoints: ["test/testXhr.ts", "test/testHttp.ts"],
         bundle: true,
         outdir: "test/www"
     });
