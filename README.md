@@ -2,18 +2,21 @@
 
 **HTTP client for JavaScript**
 
-HTTP is a simple and lightweight wrapper for the browsers native XMLHttpRequest functionality.    
+HTTP is a simple and lightweight wrapper for the browsers native XMLHttpRequest functionality.  
 The purpose of this utility is to easiliy enable HTTP request without relying on a large framework. No matter if you have a simple standard JS app, uses jQuery or react framework you can make use of HTTP request in the same way.
 
 ## Installation and use
+
 ```
 npm install owp.http --save
 ```
+
 ```javascript
 import HTTP from "owp.http";
 ```
 
 ## Static requests
+
 ```javascript
 HTTP.useOptions(options);
 const promise = HTTP.get("http://www.mysite.com/rest/data", options);
@@ -26,6 +29,7 @@ const promise = HTTP.jsonp("http://www.mysite.com/rest/data", options);
 ```
 
 ## Instance requests
+
 ```javascript
 HTTP.useOptions(options);
 const http = new HTTP("http://www.mysite.com/rest", options);
@@ -39,33 +43,36 @@ const promise = http.jsonp("data", options);
 ```
 
 ## Options
-Name | Description
---- | ----
-headers | Headers
-params | Query parameters
-data | Data payload
-json | JSON data payload
-fullResponse | Set to true to get full response
-contentType | Media type(MIME) for data payload
-responseType | Type for response data
-cache | Set to true to cache responses
-stateChangeInterceptor | State change interceptor callback
-requestInterceptor | Request interceptor callback
-responseInterceptor | Response interceptor callback
-download | Set to true to download response data
-filename | Filename for downloaded file
+
+| Name                   | Description                           |
+| ---------------------- | ------------------------------------- |
+| headers                | Headers                               |
+| params                 | Query parameters                      |
+| data                   | Data payload                          |
+| json                   | JSON data payload                     |
+| fullResponse           | Set to true to get full response      |
+| contentType            | Media type(MIME) for data payload     |
+| responseType           | Type for response data                |
+| cache                  | Set to true to cache responses        |
+| stateChangeInterceptor | State change interceptor callback     |
+| requestInterceptor     | Request interceptor callback          |
+| responseInterceptor    | Response interceptor callback         |
+| download               | Set to true to download response data |
+| filename               | Filename for downloaded file          |
 
 ### Options inheritence
-* Add options to the class with ```useOptions(options)```
-    - Inherits NO options
-* Add options to the static request ```HTTP.get("URL", options)```
-    - Inherits CLASS options
-* Add options to the instance ```new HTTP("URL", options)```
-    - Inherits CLASS options
-* Add options to the instance request ```http.get("PATH", options)```
-    - Inherits INSTANCE options
+
+-   Add options to the class with `useOptions(options)`
+    -   Inherits NO options
+-   Add options to the static request `HTTP.get("URL", options)`
+    -   Inherits CLASS options
+-   Add options to the instance `new HTTP("URL", options)`
+    -   Inherits CLASS options
+-   Add options to the instance request `http.get("PATH", options)`
+    -   Inherits INSTANCE options
 
 ## Path parameters
+
 ```javascript
 const id = "Fo%Bar";
 
@@ -81,13 +88,14 @@ const promise = http.get();
 ```
 
 ## Headers and query parameters
+
 ```javascript
 //Headers. Flat object(key/value map)
-const headers = { Origin:  "http://www.mysite.com" };
+const headers = { Origin: "http://www.mysite.com" };
 
 //Query parameters. Object(key/value map) which supports multiple values per key.
 //?id=123&field=name&field=value
-const params = { id: "123", field: [ "name", "value" ] };
+const params = { id: "123", field: ["name", "value"] };
 
 //Can be used for static requests.
 const promise = HTTP.get("http://www.mysite.com/rest/data", { headers: headers, params: params });
@@ -100,32 +108,38 @@ const promise = http.get("data", { headers: headers, params: params });
 ```
 
 ## Payload
+
 Payload parameters are the same for post/put/patch.
+
 ```javascript
 //Data with specified content type.
-const promise = http.post({ data: "myData", contentType: "text/plain" })
+const promise = http.post({ data: "myData", contentType: "text/plain" });
 //Data with undefined content type. String/boolean/number defaults to "text/plain".
-const promise = http.post({ data: "myData" })
+const promise = http.post({ data: "myData" });
 //Unspecified objects are converted to urlencoded query string a=1&b=2 with content type: "application/x-www-form-urlencoded".
-const promise = http.post({ data: { a: 1, b: 2 } })
+const promise = http.post({ data: { a: 1, b: 2 } });
 //Json object. Object is stringified and content type is "application/json".
-const promise = http.post({ json: { a: 1, b: 2 } })
+const promise = http.post({ json: { a: 1, b: 2 } });
 ```
 
 ## Response
+
 Resolved promise returns payload.
+
 ```javascript
 http.get()
-    .then(function(response) {
+    .then(function (response) {
         //Response from server if promise resolved(request succeeded).
     })
-    .catch(function(error) {
+    .catch(function (error) {
         //Full response object if promise rejected(request failed). Se  below for description of full response.
     });
 ```
 
 ## Full response
+
 Get a full response in both promise resolve and reject.
+
 ```javascript
 http.get({ fullResponse: true })
     .then(function(response) {
@@ -147,30 +161,34 @@ http.get({ fullResponse: true })
 ```
 
 ## Response type
-Specify response type. Can be used to request binary data    
+
+Specify response type. Can be used to request binary data
+
 ```javascript
-http.get({ responseType: "blob" })
-    .then(function(blob) {
-        //Blob containing binary data
-    });
+http.get({ responseType: "blob" }).then(function (blob) {
+    //Blob containing binary data
+});
 ```
 
 ## Cache
+
 Enable cache. Matches method+url and caches response.
+
 ```javascript
-http.get({ cache: true })
-    .then(function(cachedResponse) {
-        //Response is fetched from cache.
-    });
+http.get({ cache: true }).then(function (cachedResponse) {
+    //Response is fetched from cache.
+});
 ```
 
 ## State change interceptor
-Callback to trigger on every state change on the underlying XMLHttp​Request​.    
-0 	UNSENT - Client has been created. open() not called yet.    
-1 	OPENED - open() has been called.    
-2 	HEADERS_RECEIVED - send() has been called, and headers and status are available.    
-3 	LOADING - Downloading; responseText holds partial data.    
-4 	DONE - The operation is complete.    
+
+Callback to trigger on every state change on the underlying XMLHttp​Request​.  
+0 UNSENT - Client has been created. open() not called yet.  
+1 OPENED - open() has been called.  
+2 HEADERS_RECEIVED - send() has been called, and headers and status are available.  
+3 LOADING - Downloading; responseText holds partial data.  
+4 DONE - The operation is complete.
+
 ```javascript
 stateChangeInterceptor: function (readyState) {
     switch (readyState) {
@@ -180,7 +198,9 @@ stateChangeInterceptor: function (readyState) {
 ```
 
 ## Request interceptor
+
 Callback to format/update request. Useful for updating auth credentials.
+
 ```javascript
 requestInterceptor: function(request: object) {
     //Update auth credentials
@@ -195,7 +215,9 @@ requestInterceptor: function(request: object) {
 ```
 
 ## Response interceptor
+
 Callback to format/update response. Useful for logging errors.
+
 ```javascript
 responseInterceptor: function(response: object) {
     //Change response

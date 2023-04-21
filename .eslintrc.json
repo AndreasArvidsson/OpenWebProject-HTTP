@@ -1,0 +1,33 @@
+{
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    ],
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint"],
+    "ignorePatterns": ["/*", "!src"],
+    "parserOptions": {
+        "project": true,
+        "sourceType": "module",
+        "ecmaVersion": 2022
+    },
+    "rules": {
+        "no-warning-comments": "warn",
+        "@typescript-eslint/semi": "warn",
+        "@typescript-eslint/naming-convention": "error",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-return": "off",
+        "curly": "error",
+        "no-throw-literal": "error",
+        "eqeqeq": [
+            "error",
+            "always",
+            {
+                "null": "never"
+            }
+        ]
+    }
+}

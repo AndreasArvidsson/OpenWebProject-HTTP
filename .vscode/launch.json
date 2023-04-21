@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run tests",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "test"],
+            "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"]
+        }
+    ]
+}
