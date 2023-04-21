@@ -1,10 +1,15 @@
 import cloneDeep from "lodash.clonedeep";
 import _cache from "./cache";
-import { Method, Param, Request, Response } from "./types";
-import use from "./use";
+import { Downloadjs, Method, Params, Request, Response } from "./types";
+
+let downloadjs: Downloadjs;
+
+export function setDownloadjs(djs: Downloadjs) {
+    downloadjs = djs;
+}
 
 //1) Update request using interceptor.
-export default async ({ requestInterceptor, ...request }: Request) => {
+export default async ({ requestInterceptor, ...request }: Request): Promise<any> => {
     if (requestInterceptor) {
         request = await Promise.resolve(requestInterceptor(request));
     }
@@ -94,7 +99,7 @@ function doJsonp(url: string, paramsUsed: boolean, request: Request): Promise<Re
         const script = document.createElement("script");
         script.src = `${url}${paramsUsed ? "&" : "?"}callback=${callbackName}`;
 
-        const done = (ok: boolean, data: unknown) => {
+        const done = (ok: boolean, data: any) => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
             delete (window as any)[callbackName];
             document.body.removeChild(script);
@@ -106,7 +111,7 @@ function doJsonp(url: string, paramsUsed: boolean, request: Request): Promise<Re
 
         //On success callback
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-        (window as any)[callbackName] = (data: unknown) => {
+        (window as any)[callbackName] = (data: any) => {
             done(true, data);
         };
 
@@ -123,7 +128,7 @@ function doJsonp(url: string, paramsUsed: boolean, request: Request): Promise<Re
 }
 
 //5.1) Evaluate response. Update with interceptor.
-function evalResponse(request: Request, response: Response): unknown {
+function evalResponse(request: Request, response: Response): any {
     //Response based on interceptor.
     if (request.responseInterceptor) {
         return request.responseInterceptor(response);
@@ -139,25 +144,25 @@ function evalResponse(request: Request, response: Response): unknown {
 }
 
 //5.2) Download response blob.
-async function doDownload(request: Request, response: Response): Promise<unknown> {
-    if (!use.downloadjs) {
+async function doDownload(request: Request, response: Response): Promise<any> {
+    if (!downloadjs) {
         throw Error("owp.http: Download option requires owp.http-get");
     }
 
     //First collecct needed data in case the responseInterceptor removes it.
-    const blob = response.data;
+    const blob = response.data as Blob;
     const contentType = response.headers["content-type"];
     const filename = request.filename || calcFilename(response, contentType);
 
     const res = await evalResponse(request, response);
 
     //Last download in case of responseInterceptor throws exception.
-    use.downloadjs(blob, filename, contentType);
+    downloadjs(blob, filename, contentType);
 
     return res;
 }
 
-function calcBody(json?: unknown, data?: string): string | undefined {
+function calcBody(json?: object, data?: string): string | undefined {
     if (json) {
         return JSON.stringify(json);
     }
@@ -169,7 +174,7 @@ function calcBody(json?: unknown, data?: string): string | undefined {
     return data;
 }
 
-function calcContentType(contentType?: string, json?: unknown, data?: string): string {
+function calcContentType(contentType?: string, json?: object, data?: string): string {
     if (contentType) {
         return contentType;
     }
@@ -188,7 +193,7 @@ function calcContentType(contentType?: string, json?: unknown, data?: string): s
     return "application/x-www-form-urlencoded; charset=UTF-8";
 }
 
-function calcQueryParmsString(params: Record<string, Param | Param[]>): string {
+function calcQueryParmsString(params: Params): string {
     const parts = [];
     for (const i in params) {
         const key = encodeURIComponent(i);
@@ -223,7 +228,7 @@ function calcFullResponse(xhr: XMLHttpRequest): Response {
     };
 }
 
-function calcJsonpFullResponse(ok: boolean, url: string, data: unknown): Response {
+function calcJsonpFullResponse(ok: boolean, url: string, data: any): Response {
     return {
         ok,
         url,
@@ -235,7 +240,7 @@ function calcJsonpFullResponse(ok: boolean, url: string, data: unknown): Respons
     };
 }
 
-function getData(xhr: XMLHttpRequest, headers: Record<string, string>, hasText: boolean): unknown {
+function getData(xhr: XMLHttpRequest, headers: Record<string, string>, hasText: boolean): any {
     //Already json in response.
     if (xhr.responseType === "json") {
         return xhr.response;

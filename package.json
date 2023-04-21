@@ -1,11 +1,12 @@
 {
     "name": "owp.http",
     "description": "HTTP client for JavaScript",
-    "version": "2.1.0",
+    "version": "3.0.0",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
     "files": [
         "lib/*"
     ],
-    "main": "lib/index.js",
     "scripts": {
         "build": "tsc -p .",
         "test": "tsx test/runTests.ts",

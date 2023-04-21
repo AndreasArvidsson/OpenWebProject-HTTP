@@ -1,9 +1,9 @@
 export interface Options {
     requestInterceptor?: (request: Request) => Request | Promise<Request>;
-    responseInterceptor?: (response: Response) => unknown | Promise<unknown>;
+    responseInterceptor?: (response: Response) => any | Promise<any>;
     stateChangeInterceptor?: (readyState: number) => void;
-    params?: Record<string, Param | Param[]>;
-    headers?: Record<string, string>;
+    params?: Params;
+    headers?: Headers;
     cache?: boolean;
     download?: boolean;
     data?: string;
@@ -29,10 +29,13 @@ export interface Response {
     status: number;
     statusText: string;
     text: string | null;
-    data: unknown;
+    data: any;
 }
 
 type Primary = string | number | boolean;
-export type Param = Primary | null;
+type Param = Primary | null;
+export type Params = Record<string, Param | Param[]>;
+export type Headers = Record<string, string>;
 export type Method = "GET" | "DELETE" | "HEAD" | "PUT" | "PATCH" | "POST" | "JSONP";
 export type Arg = Primary | Options;
+export type Downloadjs = (blob: Blob, filename: string, contentType: string) => void;
