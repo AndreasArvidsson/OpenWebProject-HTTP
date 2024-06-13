@@ -33,9 +33,9 @@ export interface Response {
 }
 
 type Primary = string | number | boolean;
-type Param = Primary | null;
+type Param = Primary | null | undefined;
 export type Params = Record<string, Param | Param[]>;
-export type Headers = Record<string, string>;
+export type Headers = Record<string, string | null | undefined>;
 export type Method = "GET" | "DELETE" | "HEAD" | "PUT" | "PATCH" | "POST" | "JSONP";
 export type Arg = Primary | Options;
 export type Downloadjs = (blob: Blob, filename: string, contentType: string) => void;
