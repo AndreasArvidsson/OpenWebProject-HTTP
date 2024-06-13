@@ -80,8 +80,9 @@ function doXhr(
         xhr.open(method, url, true); //async
 
         for (const i in headers) {
-            if (headers[i] !== undefined && headers[i] != null) {
-                xhr.setRequestHeader(i, headers[i]);
+            const header = headers[i];
+            if (header != null) {
+                xhr.setRequestHeader(i, header);
             }
         }
 
