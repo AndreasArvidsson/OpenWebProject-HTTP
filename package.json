@@ -24,7 +24,7 @@
     "homepage": "https://github.com/AndreasArvidsson/OpenWebProject-HTTP",
     "repository": {
         "type": "git",
-        "url": "https://github.com/AndreasArvidsson/OpenWebProject-HTTP.git"
+        "url": "git+https://github.com/AndreasArvidsson/OpenWebProject-HTTP.git"
     },
     "bugs": {
         "url": "https://github.com/AndreasArvidsson/OpenWebProject-HTTP/issues"
