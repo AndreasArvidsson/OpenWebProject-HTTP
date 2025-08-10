@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
-        "module": "ESNext",
-        "target": "ES6",
+        "module": "esnext",
+        "target": "es2020",
         "lib": ["ESNext", "DOM"],
-        "moduleResolution": "nodenext",
+        "moduleResolution": "node10",
         "rootDir": "src",
         "outDir": "lib",
         "esModuleInterop": true,

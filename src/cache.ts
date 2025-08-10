@@ -1,4 +1,4 @@
-import { Response } from "./types";
+import type { Response } from "./types";
 const cache: Record<string, Promise<Response>> = {};
 
 export default {

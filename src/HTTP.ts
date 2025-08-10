@@ -4,10 +4,10 @@
  */
 
 import cloneDeep from "lodash.clonedeep";
-import { Arg, InternalOptions, Method, Options } from "./types";
-import XHR from "./xhr";
+import type { Arg, InternalOptions, Method, Options } from "./types";
+import { xhr } from "./xhr";
 
-class HTTP {
+export default class HTTP {
     static options: Options = {};
     options: InternalOptions;
 
@@ -80,15 +80,13 @@ class HTTP {
     private xhr(method: Method, args: Arg[]) {
         const options = cloneDeep(this.options);
         parseArguments(options, args);
-        return XHR({ method, ...options });
+        return xhr({ method, ...options });
     }
 }
 
-export default HTTP;
-
 function staticXhr(method: Method, url: string, args: Arg[]) {
     const options = constructOptions(url, args);
-    return XHR({ method, ...options });
+    return xhr({ method, ...options });
 }
 
 function constructOptions(url: string, args: Arg[]): InternalOptions {
