@@ -1,6 +1,6 @@
 import cloneDeep from "lodash.clonedeep";
 import _cache from "./cache";
-import { Downloadjs, Method, Params, Request, Response } from "./types";
+import type { Downloadjs, Method, Params, Request, Response } from "./types";
 
 let downloadjs: Downloadjs;
 
@@ -9,8 +9,8 @@ export function setDownloadjs(djs: Downloadjs) {
 }
 
 //1) Update request using interceptor.
-export default async ({ requestInterceptor, ...request }: Request): Promise<any> => {
-    if (requestInterceptor) {
+export const xhr = async ({ requestInterceptor, ...request }: Request): Promise<any> => {
+    if (requestInterceptor != null) {
         request = await Promise.resolve(requestInterceptor(request));
     }
     return evaluateRequest(request);
@@ -61,20 +61,36 @@ function performRequest(
 function doXhr(
     url: string,
     method: Method,
-    { data, json, contentType, responseType, headers, download, stateChangeInterceptor }: Request
+    {
+        data,
+        json,
+        contentType,
+        responseType,
+        headers,
+        download,
+        stateChangeInterceptor,
+        progressInterceptor
+    }: Request
 ): Promise<Response> {
     return new Promise((resolve) => {
         const xhr = new XMLHttpRequest();
 
         xhr.responseType = download ? "blob" : responseType ?? "";
 
-        xhr.onreadystatechange = () => {
-            if (stateChangeInterceptor) {
+        if (stateChangeInterceptor != null) {
+            xhr.onreadystatechange = () => {
                 stateChangeInterceptor(xhr.readyState);
-            }
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                resolve(calcFullResponse(xhr));
-            }
+            };
+        }
+
+        if (progressInterceptor != null) {
+            xhr.onprogress = (e) => {
+                progressInterceptor(e.loaded, e.lengthComputable ? e.total : 0);
+            };
+        }
+
+        xhr.onloadend = () => {
+            resolve(calcFullResponse(xhr));
         };
 
         xhr.open(method, url, true); //async
@@ -104,9 +120,11 @@ function doJsonp(url: string, paramsUsed: boolean, request: Request): Promise<Re
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
             delete (window as any)[callbackName];
             document.body.removeChild(script);
-            if (stateChangeInterceptor) {
+
+            if (stateChangeInterceptor != null) {
                 stateChangeInterceptor(XMLHttpRequest.DONE);
             }
+
             resolve(calcJsonpFullResponse(ok, url, data));
         };
 
@@ -120,7 +138,7 @@ function doJsonp(url: string, paramsUsed: boolean, request: Request): Promise<Re
             done(false, null);
         };
 
-        if (stateChangeInterceptor) {
+        if (stateChangeInterceptor != null) {
             stateChangeInterceptor(XMLHttpRequest.OPENED);
         }
 
@@ -131,7 +149,7 @@ function doJsonp(url: string, paramsUsed: boolean, request: Request): Promise<Re
 //5.1) Evaluate response. Update with interceptor.
 function evalResponse(request: Request, response: Response): any {
     //Response based on interceptor.
-    if (request.responseInterceptor) {
+    if (request.responseInterceptor != null) {
         return request.responseInterceptor(response);
     }
 
