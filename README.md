@@ -62,14 +62,14 @@ const promise = http.jsonp("data", options);
 
 ### Options inheritence
 
--   Add options to the class with `useOptions(options)`
-    -   Inherits NO options
--   Add options to the static request `HTTP.get("URL", options)`
-    -   Inherits CLASS options
--   Add options to the instance `new HTTP("URL", options)`
-    -   Inherits CLASS options
--   Add options to the instance request `http.get("PATH", options)`
-    -   Inherits INSTANCE options
+- Add options to the class with `useOptions(options)`
+    - Inherits NO options
+- Add options to the static request `HTTP.get("URL", options)`
+    - Inherits CLASS options
+- Add options to the instance `new HTTP("URL", options)`
+    - Inherits CLASS options
+- Add options to the instance request `http.get("PATH", options)`
+    - Inherits INSTANCE options
 
 ## Path parameters
 

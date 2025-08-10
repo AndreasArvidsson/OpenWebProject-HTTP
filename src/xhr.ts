@@ -75,7 +75,7 @@ function doXhr(
     return new Promise((resolve) => {
         const xhr = new XMLHttpRequest();
 
-        xhr.responseType = download ? "blob" : responseType ?? "";
+        xhr.responseType = download ? "blob" : (responseType ?? "");
 
         if (stateChangeInterceptor != null) {
             xhr.onreadystatechange = () => {
