@@ -12,7 +12,9 @@ export interface HttpOptions {
     readonly requestInterceptor?: (
         request: HttpRequest,
     ) => HttpRequest | Promise<HttpRequest>;
-    readonly responseInterceptor?: (response: HttpResponse) => HttpResponse;
+    readonly responseInterceptor?: (
+        response: HttpResponse,
+    ) => HttpResponse | Promise<HttpResponse>;
     readonly stateChangeInterceptor?: (readyState: number) => void;
     readonly progressInterceptor?: (loaded: number, total: number) => void;
 }

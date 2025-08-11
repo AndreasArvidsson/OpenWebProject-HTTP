@@ -30,7 +30,7 @@ export async function execRequest({
 
     // Response based on interceptor.
     if (request.responseInterceptor != null) {
-        response = request.responseInterceptor(response);
+        response = await Promise.resolve(request.responseInterceptor(response));
     }
 
     if (response.ok) {

@@ -11,13 +11,13 @@ The purpose of this utility is to easiliy enable HTTP request without relying on
 npm install owp.http --save
 ```
 
-```javascript
+```ts
 import HTTP from "owp.http";
 ```
 
 ## Static requests
 
-```javascript
+```ts
 HTTP.useOptions(options);
 const promise = HTTP.get("http://www.mysite.com/rest/data", options);
 const promise = HTTP.delete("http://www.mysite.com/rest/data", options);
@@ -30,35 +30,33 @@ const promise = HTTP.jsonp("http://www.mysite.com/rest/data", options);
 
 ## Instance requests
 
-```javascript
+```ts
 HTTP.useOptions(options);
 const http = new HTTP("http://www.mysite.com/rest", options);
-const promise = http.get("data", options);
-const promise = http.delete("data", options);
-const promise = http.head("data", options);
-const promise = http.post("data", options);
-const promise = http.put("data", options);
-const promise = http.patch("data", options);
-const promise = http.jsonp("data", options);
+const promise = http.path("data").get(options);
+const promise = http.path("data").delete(options);
+const promise = http.path("data").head(options);
+const promise = http.path("data").post(options);
+const promise = http.path("data").put(options);
+const promise = http.path("data").patch(options);
+const promise = http.path("data").jsonp(options);
 ```
 
 ## Options
 
-| Name                   | Description                           |
-| ---------------------- | ------------------------------------- |
-| headers                | Headers                               |
-| params                 | Query parameters                      |
-| data                   | Data payload                          |
-| json                   | JSON data payload                     |
-| fullResponse           | Set to true to get full response      |
-| contentType            | Media type(MIME) for data payload     |
-| responseType           | Type for response data                |
-| cache                  | Set to true to cache responses        |
-| stateChangeInterceptor | State change interceptor callback     |
-| requestInterceptor     | Request interceptor callback          |
-| responseInterceptor    | Response interceptor callback         |
-| download               | Set to true to download response data |
-| filename               | Filename for downloaded file          |
+| Name                   | Description                          |
+| ---------------------- | ------------------------------------ |
+| headers                | Headers                              |
+| params                 | Query parameters                     |
+| data                   | Data payload                         |
+| json                   | JSON data payload                    |
+| contentType            | Media type(MIME) for data payload    |
+| responseType           | Type for response data               |
+| cache                  | Set to true to cache responses       |
+| stateChangeInterceptor | State change interceptor callback    |
+| progressInterceptor    | Progress update interceptor callback |
+| requestInterceptor     | Request interceptor callback         |
+| responseInterceptor    | Response interceptor callback        |
 
 ### Options inheritence
 
@@ -68,28 +66,28 @@ const promise = http.jsonp("data", options);
     - Inherits CLASS options
 - Add options to the instance `new HTTP("URL", options)`
     - Inherits CLASS options
-- Add options to the instance request `http.get("PATH", options)`
+- Add options to the instance request `http.get(options)`
     - Inherits INSTANCE options
 
 ## Path parameters
 
-```javascript
+```ts
 const id = "Fo%Bar";
 
 // Static request. All paths string after the first(base) one is uri encoded.
-const promise = HTTP.get("http://www.mysite.com/rest/data", id, "subpath");
+const promise = HTTP.get(["http://www.mysite.com/rest/data", id, "subpath"]);
 
 // Instance constructor. All paths string after the first(base) one is uri encoded.
-const http = new HTTP("http://www.mysite.com", "rest");
-// Instance request. All path string are uri encoded.
-const promise = http.get("data", id, "subpath");
+const http = new HTTP(["http://www.mysite.com", "rest"]);
+// Instance path(). All path string are uri encoded.
+const promise = http.path("data", id, "subpath");
 // Instance request at base path.
 const promise = http.get();
 ```
 
 ## Headers and query parameters
 
-```javascript
+```ts
 // Headers. Flat object(key/value map)
 const headers = { Origin: "http://www.mysite.com" };
 
@@ -117,7 +115,7 @@ const promise = http.get("data", { headers: headers, params: params });
 
 Payload parameters are the same for post/put/patch.
 
-```javascript
+```ts
 // Data with specified content type.
 const promise = http.post({ data: "myData", contentType: "text/plain" });
 // Data with undefined content type. String/boolean/number defaults to "text/plain".
@@ -132,37 +130,30 @@ const promise = http.post({ json: { a: 1, b: 2 } });
 
 Resolved promise returns payload.
 
-```javascript
+```ts
 http.get()
-    .then((response: any) => {
-        // Response from server if promise resolved(request succeeded).
+    .then((response: HttpResponse) => {
+        // Response from server if promise resolved (request succeeded).
     })
-    .catch((error: Response) => {
-        // Full response object if promise rejected(request failed). Se  below for description of full response.
+    .catch((error: HttpResponse) => {
+        // Full response object if promise rejected (request failed). Se  below for description of HttpResponse.
     });
 ```
 
-## Full response
+## HttpResponse
 
-Get a full response in both promise resolve and reject.
-
-```javascript
-http.get({ fullResponse: true })
-    .then((response: Response) => {
-        // Full response returned.
-    });
-
-// Full response format.
+```ts
 {
-    ok: true,
-    url: "http://www.mysite.com/rest/data?id=123",
-    status: 200,
-    statusText: "OK",
-    text: "{ value: 5 }",
-    // Data is the same value that is returned in a simple(non full) response.
-    data: { value: 5 },
-    // Object with headers
-    headers: { }
+    url: "http://www.mysite.com/rest/data?id=123";
+    ok: true;
+    status: 200;
+    statusText: "OK";
+    text: "{ value: 5 }";
+
+    header(name: string): string | undefined;
+    headers(): Record<string, string>;
+    json<T>(): T;
+    download(filename?: string): Promise<void>;
 }
 ```
 
@@ -170,7 +161,7 @@ http.get({ fullResponse: true })
 
 Specify response type. Can be used to request binary data
 
-```javascript
+```ts
 http.get({ responseType: "blob" }).then((blob: Blob) => {
     // Blob containing binary data
 });
@@ -180,7 +171,7 @@ http.get({ responseType: "blob" }).then((blob: Blob) => {
 
 Enable cache. Matches method+url and caches response.
 
-```javascript
+```ts
 http.get({ cache: true }).then((cachedResponse: any) => {
     // Response is fetched from cache.
 });
@@ -195,7 +186,7 @@ Callback to trigger on every state change on the underlying XMLHttp​Request​
 3 LOADING - Downloading; responseText holds partial data.  
 4 DONE - The operation is complete.
 
-```javascript
+```ts
 stateChangeInterceptor: (readyState: number): void => {
     // readyState = [0, 4]
 };
@@ -206,7 +197,7 @@ stateChangeInterceptor: (readyState: number): void => {
 Callback to trigger on every progress update on the underlying XMLHttp​Request​.  
 `total` will always be `0` if the content length could not be computed.
 
-```javascript
+```ts
 progressInterceptor: (loaded: number, total: number): void => {
     console.log(loaded / total);
 };
@@ -216,8 +207,8 @@ progressInterceptor: (loaded: number, total: number): void => {
 
 Callback to format/update request. Useful for updating auth credentials.
 
-```javascript
-requestInterceptor: (request: Request): Request | Promise<Request> => {
+```ts
+requestInterceptor: (request: HttpRequest): HttpRequest | Promise<Request> => {
     // Update auth credentials
     request.headers.Authorization = "...";
     // Return updated request
@@ -233,8 +224,10 @@ requestInterceptor: (request: Request): Request | Promise<Request> => {
 
 Callback to format/update response. Useful for logging errors.
 
-```javascript
-responseInterceptor: (response: Response): any | Promise<any> => {
+```ts
+responseInterceptor: (
+    response: HttpResponse,
+): HttpResponse | Promise<HttpResponse> => {
     // Change response
     if (response.data == null) {
         response.data = "No Data, but ok";
