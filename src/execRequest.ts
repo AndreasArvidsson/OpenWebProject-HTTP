@@ -5,7 +5,7 @@ import { processXhr } from "./processXhr";
 import type { HttpRequest } from "./types";
 import { calcQueryParmsString } from "./util/calcQueryParmsString";
 
-export async function processRequest({
+export async function execRequest({
     requestInterceptor,
     ...request
 }: HttpRequest): Promise<HttpResponse> {

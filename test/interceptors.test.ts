@@ -22,7 +22,7 @@ describe("Interceptors", () => {
         });
     });
 
-    it("sub.request", async () => {
+    it("requestInterceptor", async () => {
         try {
             await sub.get({
                 params: { f: 6 },

@@ -3,7 +3,7 @@
  * https://github.com/AndreasArvidsson/OpenWebProject-HTTP
  */
 
-import { processRequest } from "./processRequest";
+import { execRequest } from "./execRequest";
 import type { HttpOptions, Method, PathParam } from "./types";
 import { mergeOptions } from "./util/mergeOptions";
 import { updateUrl } from "./util/updateUrl";
@@ -101,5 +101,5 @@ function exec(
     optionsB?: HttpOptions,
 ) {
     const updatedOptions = mergeOptions(HTTP.getOptions(), optionsA, optionsB);
-    return processRequest({ url, method, ...updatedOptions });
+    return execRequest({ url, method, ...updatedOptions });
 }

@@ -23,7 +23,6 @@ describe("Options", () => {
     });
 
     it("HTTP.setOptions()", () => {
-        console.log("set options");
         HTTP.setOptions({
             cache: true,
         });
