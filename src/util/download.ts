@@ -57,11 +57,12 @@ function calcFilename(
     }
 
     const parts = url.split("/").filter(Boolean);
-    const name = parts.length ? parts[parts.length - 1] : "file";
+    const name = parts.length > 0 ? parts[parts.length - 1] : "download";
 
     // If content type is json make sure it has a json ending.
     const ext =
-        contentType?.includes("json") && !name.toLowerCase().endsWith(".json")
+        contentType === "application/json" &&
+        !name.toLowerCase().endsWith(".json")
             ? ".json"
             : "";
 
