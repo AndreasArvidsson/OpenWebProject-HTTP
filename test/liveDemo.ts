@@ -10,4 +10,10 @@ export default async function () {
     const res = await http.path("swagger.json").get();
 
     console.log(res);
+
+    const data = res.json();
+
+    console.log(data);
+
+    res.download();
 }
