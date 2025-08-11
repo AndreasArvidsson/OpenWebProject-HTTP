@@ -1,5 +1,5 @@
 import { download } from "./util/download";
-import { parseXhrHeaders } from "./util/parseXhrHeaders";
+import { getXhrHeaders } from "./util/getXhrHeaders";
 import { xhrToJson } from "./util/xhrToJson";
 
 export class HttpResponse {
@@ -24,7 +24,7 @@ export class HttpResponse {
     }
 
     headers(): Record<string, string> {
-        return parseXhrHeaders(this.xhr);
+        return getXhrHeaders(this.xhr);
     }
 
     json<T>(): T {
