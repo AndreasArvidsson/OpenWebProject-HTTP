@@ -1,6 +1,6 @@
 import { download } from "./util/download";
 import { getXhrHeaders } from "./util/getXhrHeaders";
-import { xhrToJson } from "./util/responseToJson";
+import { xhrToJson } from "./util/xhrToJson";
 import { xhrHasText } from "./util/xhrHasText";
 
 export abstract class HttpResponse {
