@@ -3,7 +3,7 @@ import Mocha from "mocha";
 import path from "node:path";
 
 const mocha = new Mocha({
-    color: true
+    color: true,
 });
 
 const cwd = path.join(__dirname);

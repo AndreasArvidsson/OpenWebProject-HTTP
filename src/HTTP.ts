@@ -3,118 +3,106 @@
  * https://github.com/AndreasArvidsson/OpenWebProject-HTTP
  */
 
-import cloneDeep from "lodash.clonedeep";
-import type { Arg, InternalOptions, Method, Options } from "./types";
-import { xhr } from "./xhr";
+import { execRequest } from "./execRequest";
+import type { HttpOptions, Method, PathParam, Url } from "./types";
+import { mergeOptions } from "./util/mergeOptions";
+import { parseUrl, updateUrl } from "./util/updateUrl";
 
 export default class HTTP {
-    static options: Options = {};
-    options: InternalOptions;
+    private static options: HttpOptions = {};
 
-    static get(url: string, ...args: Arg[]) {
-        return staticXhr("GET", url, args);
-    }
-    static delete(url: string, ...args: Arg[]) {
-        return staticXhr("DELETE", url, args);
-    }
-    static head(url: string, ...args: Arg[]) {
-        return staticXhr("HEAD", url, args);
-    }
-    static put(url: string, ...args: Arg[]) {
-        return staticXhr("PUT", url, args);
-    }
-    static patch(url: string, ...args: Arg[]) {
-        return staticXhr("PATCH", url, args);
-    }
-    static post(url: string, ...args: Arg[]) {
-        return staticXhr("POST", url, args);
-    }
-    static jsonp(url: string, ...args: Arg[]) {
-        return staticXhr("JSONP", url, args);
-    }
+    private readonly _url: string;
+    private readonly _options: HttpOptions;
 
-    static useOptions(options: Options) {
-        mergeOptions(HTTP.options, options);
+    static get(url: Url, options?: HttpOptions) {
+        return exec("GET", url, options);
+    }
+    static delete(url: Url, options?: HttpOptions) {
+        return exec("DELETE", url, options);
+    }
+    static head(url: Url, options?: HttpOptions) {
+        return exec("HEAD", url, options);
+    }
+    static put(url: Url, options?: HttpOptions) {
+        return exec("PUT", url, options);
+    }
+    static patch(url: Url, options?: HttpOptions) {
+        return exec("PATCH", url, options);
+    }
+    static post(url: Url, options?: HttpOptions) {
+        return exec("POST", url, options);
+    }
+    static jsonp(url: Url, options?: HttpOptions) {
+        return exec("JSONP", url, options);
     }
 
-    constructor(http: HTTP, ...args: Arg[]);
-    constructor(url: string, ...args: Arg[]);
-    constructor(urlOrHttp: string | HTTP, ...args: Arg[]) {
-        //Sub instance called internally by path().
-        if (urlOrHttp instanceof HTTP) {
-            this.options = cloneDeep(urlOrHttp.options);
-            parseArguments(this.options, args);
-        }
-        //Normal instance created by user.
-        else {
-            this.options = constructOptions(urlOrHttp, args);
-        }
+    static useOptions(options: HttpOptions) {
+        HTTP.options = mergeOptions(HTTP.options, options);
+    }
+    static setOptions(options: HttpOptions) {
+        HTTP.options = options;
+    }
+    static getOptions(): HttpOptions {
+        return HTTP.options;
     }
 
-    get(...args: Arg[]) {
-        return this.xhr("GET", args);
-    }
-    delete(...args: Arg[]) {
-        return this.xhr("DELETE", args);
-    }
-    head(...args: Arg[]) {
-        return this.xhr("HEAD", args);
-    }
-    put(...args: Arg[]) {
-        return this.xhr("PUT", args);
-    }
-    patch(...args: Arg[]) {
-        return this.xhr("PATCH", args);
-    }
-    post(...args: Arg[]) {
-        return this.xhr("POST", args);
-    }
-    jsonp(...args: Arg[]) {
-        return this.xhr("JSONP", args);
+    constructor(url: Url, options: HttpOptions = {}) {
+        this._url = parseUrl(url);
+        this._options = mergeOptions(options);
     }
 
-    path(...args: Arg[]) {
-        return new HTTP(this, ...args);
+    getUrl(): string {
+        return this._url;
+    }
+    getOptions(): HttpOptions {
+        return this._options;
     }
 
-    private xhr(method: Method, args: Arg[]) {
-        const options = cloneDeep(this.options);
-        parseArguments(options, args);
-        return xhr({ method, ...options });
+    get(options?: HttpOptions) {
+        return this.exec("GET", options);
+    }
+    delete(options?: HttpOptions) {
+        return this.exec("DELETE", options);
+    }
+    head(options?: HttpOptions) {
+        return this.exec("HEAD", options);
+    }
+    put(options?: HttpOptions) {
+        return this.exec("PUT", options);
+    }
+    patch(options?: HttpOptions) {
+        return this.exec("PATCH", options);
+    }
+    post(options?: HttpOptions) {
+        return this.exec("POST", options);
+    }
+    jsonp(options?: HttpOptions) {
+        return this.exec("JSONP", options);
+    }
+
+    path(...params: PathParam[]) {
+        const url = updateUrl(this._url, params);
+        return new HTTP(url, this._options);
+    }
+    options(options: HttpOptions) {
+        const updatedOptions = mergeOptions(this._options, options);
+        return new HTTP(this._url, updatedOptions);
+    }
+
+    private exec(method: Method, options: HttpOptions | undefined) {
+        return exec(method, this._url, this._options, options);
     }
 }
 
-function staticXhr(method: Method, url: string, args: Arg[]) {
-    const options = constructOptions(url, args);
-    return xhr({ method, ...options });
-}
-
-function constructOptions(url: string, args: Arg[]): InternalOptions {
-    const options: InternalOptions = {
-        url,
-        params: {},
-        headers: {}
-    };
-    mergeOptions(options, HTTP.options);
-    parseArguments(options, args);
-    return options;
-}
-
-function parseArguments(options: InternalOptions, args: Arg[]) {
-    const urlParts = [options.url];
-    args.forEach((arg) => {
-        if (typeof arg === "object") {
-            mergeOptions(options, arg);
-        } else {
-            urlParts.push(encodeURIComponent(arg));
-        }
+function exec(
+    method: Method,
+    url: Url,
+    optionsA?: HttpOptions,
+    optionsB?: HttpOptions,
+) {
+    return execRequest({
+        method,
+        url: parseUrl(url),
+        ...mergeOptions(HTTP.getOptions(), optionsA, optionsB),
     });
-    options.url = urlParts.join("/");
-}
-
-function mergeOptions(target: Options, source: Options) {
-    const { headers, params, ...rest } = source;
-    Object.assign(target, rest);
-    target.headers = { ...target.headers, ...headers };
-    target.params = { ...target.params, ...params };
 }
