@@ -1,6 +1,6 @@
 import cache from "./cache";
 import type { HttpResponse } from "./HttpResponse";
-import { processJsonp } from "./processJsona";
+import { processJsonp } from "./processJsonp";
 import { processXhr } from "./processXhr";
 import type { HttpRequest } from "./types";
 import { calcQueryParmsString } from "./util/calcQueryParmsString";
