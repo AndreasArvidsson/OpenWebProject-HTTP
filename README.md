@@ -165,16 +165,19 @@ http.get()
 
 ```ts
 {
-    url: "http://www.mysite.com/rest/data?id=123";
-    ok: true;
-    status: 200;
-    statusText: "OK";
-    text: "{ value: 5 }";
+    url: "http://www.mysite.com/rest/data?id=123",
+    ok: true,
+    status: 200,
+    statusText: "OK",
+    responseType: "json",
 
-    header(name: string): string | undefined;
-    headers(): Record<string, string>;
-    json<T>(): T;
-    download(filename?: string): Promise<void>;
+    header(name: string): string,
+    headers(): Record<string, string>,
+    text(): string,
+    json<T>(): T,
+    blob(): Blob ,
+    arrayBuffer(): ArrayBuffer,
+    download(filename?: string): Promise<void>,
 }
 ```
 
