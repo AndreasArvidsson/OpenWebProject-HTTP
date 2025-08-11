@@ -13,7 +13,7 @@ export function calcQueryParmsString(
         const key = encodeURIComponent(i);
         const value = params[i];
 
-        //Array of values
+        // Array of values
         if (Array.isArray(value)) {
             for (const item of value) {
                 if (item != null) {
@@ -21,7 +21,7 @@ export function calcQueryParmsString(
                 }
             }
         }
-        //Single value
+        // Single value
         else if (value != null) {
             parts.push(`${key}=${encodeURIComponent(value)}`);
         }
