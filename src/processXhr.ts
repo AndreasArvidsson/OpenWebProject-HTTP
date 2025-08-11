@@ -1,5 +1,5 @@
 import { HttpResponse } from "./HttpResponse";
-import type { HttpRequest, Method } from "./types";
+import type { HttpRequest, Json, Method } from "./types";
 import { calcQueryParmsString } from "./util/calcQueryParmsString";
 
 export function processXhr(
@@ -55,30 +55,32 @@ export function processXhr(
     });
 }
 
-function calcBody(json?: object, data?: string): string | undefined {
-    if (json) {
+function calcBody(json?: Json, data?: string): string | undefined {
+    // null is valid json
+    if (json !== undefined) {
         return JSON.stringify(json);
     }
 
-    // Convert object to query param string.
-    if (typeof data === "object" && data != null) {
+    // Convert object to query param string
+    if (data != null && typeof data === "object") {
         return calcQueryParmsString(data);
     }
 
-    // Simple data.
+    // Simple data
     return data;
 }
 
 function calcContentType(
     contentType?: string,
-    json?: object,
+    json?: Json,
     data?: string,
 ): string {
     if (contentType != null) {
         return contentType;
     }
 
-    if (json != null) {
+    // null is valid json
+    if (json !== undefined) {
         return "application/json";
     }
 
@@ -91,6 +93,6 @@ function calcContentType(
         }
     }
 
-    // Default content type.
+    // Default content type
     return "application/x-www-form-urlencoded; charset=UTF-8";
 }

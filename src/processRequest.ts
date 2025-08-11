@@ -28,7 +28,7 @@ export async function processRequest({
         ? await cache.get(method + url, process)
         : await process();
 
-    //Response based on interceptor.
+    // Response based on interceptor.
     if (request.responseInterceptor != null) {
         return request.responseInterceptor(response);
     }

@@ -5,7 +5,7 @@ export interface HttpOptions {
     readonly headers?: HttpHeaders;
     readonly cache?: boolean;
     readonly data?: string;
-    readonly json?: object;
+    readonly json?: Json;
     readonly contentType?: string;
     readonly responseType?: XMLHttpRequestResponseType;
 
@@ -24,11 +24,11 @@ export interface HttpRequest extends HttpOptions {
     method: Method;
 }
 
-type Primary = string | number | boolean;
-type Param = Primary | null | undefined;
+type QueryParam = string | number | boolean | null | undefined;
 
+export type Json = string | number | boolean | null | object;
 export type PathParam = string | number | false | null | undefined;
-export type HttpParams = Record<string, Param | Param[]>;
+export type HttpParams = Record<string, QueryParam | QueryParam[]>;
 export type HttpHeaders = Record<string, string | null | undefined>;
 export type Method =
     | "GET"
