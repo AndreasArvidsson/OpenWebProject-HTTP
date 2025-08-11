@@ -30,17 +30,19 @@
         "url": "https://github.com/AndreasArvidsson/OpenWebProject-HTTP/issues"
     },
     "devDependencies": {
+        "@eslint/js": "^9.33.0",
         "@types/mocha": "^10.0.10",
         "@types/node": "^24.2.1",
-        "@typescript-eslint/eslint-plugin": "^5.62.0",
-        "@typescript-eslint/parser": "^5.62.0",
         "downloadjs": "^1.4.7",
         "esbuild": "^0.25.8",
-        "eslint": "^8.57.1",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint": "^9.33.0",
         "glob": "^11.0.3",
+        "jiti": "^2.5.1",
         "mocha": "^11.7.1",
         "prettier": "^3.6.2",
         "tsx": "^4.20.3",
+        "typescript-eslint": "^8.39.1",
         "typescript": "^5.9.2"
     }
 }
