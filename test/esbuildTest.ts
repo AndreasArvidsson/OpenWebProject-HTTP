@@ -4,7 +4,7 @@ import esbuild from "esbuild";
     const ctx = await esbuild.context({
         entryPoints: ["test/liveTests.ts"],
         bundle: true,
-        outfile: "test/www/liveTests.js",
+        outfile: "test/www/index.js",
     });
 
     const { port } = await ctx.serve({ servedir: "test/www" });
