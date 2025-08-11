@@ -98,10 +98,16 @@ const headers = { Origin: "http://www.mysite.com" };
 const params = { id: "123", field: ["name", "value"] };
 
 // Can be used for static requests.
-const promise = HTTP.get("http://www.mysite.com/rest/data", { headers: headers, params: params });
+const promise = HTTP.get("http://www.mysite.com/rest/data", {
+    headers: headers,
+    params: params,
+});
 
 // Can be given to the constructor and passed to each request.
-const http = new HTTP("http://www.mysite.com/rest", { headers: headers, params: params });
+const http = new HTTP("http://www.mysite.com/rest", {
+    headers: headers,
+    params: params,
+});
 
 // Can be defined for single request.
 const promise = http.get("data", { headers: headers, params: params });

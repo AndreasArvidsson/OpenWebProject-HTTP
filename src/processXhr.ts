@@ -36,7 +36,8 @@ export function processXhr(
             resolve(new HttpResponse(xhr));
         };
 
-        xhr.open(method, url, true); //async
+        // async=true
+        xhr.open(method, url, true);
 
         for (const i in headers) {
             const header = headers[i];
@@ -54,34 +55,17 @@ export function processXhr(
     });
 }
 
-//5.1) Evaluate response. Update with interceptor.
-function evalResponse(
-    request: HttpRequest,
-    response: HttpResponse,
-): HttpResponse {
-    //Response based on interceptor.
-    if (request.responseInterceptor != null) {
-        return request.responseInterceptor(response);
-    }
-
-    //Response based on 'fullResponse'
-    if (response.ok) {
-        return response;
-    }
-
-    //Rejection always gets the full response.
-    throw response;
-}
-
 function calcBody(json?: object, data?: string): string | undefined {
     if (json) {
         return JSON.stringify(json);
     }
-    //Convert object to query param string.
+
+    // Convert object to query param string.
     if (typeof data === "object" && data != null) {
         return calcQueryParmsString(data);
     }
-    //Simple data.
+
+    // Simple data.
     return data;
 }
 
@@ -90,13 +74,15 @@ function calcContentType(
     json?: object,
     data?: string,
 ): string {
-    if (contentType) {
+    if (contentType != null) {
         return contentType;
     }
-    if (json) {
+
+    if (json != null) {
         return "application/json";
     }
-    if (data) {
+
+    if (data != null) {
         switch (typeof data) {
             case "boolean":
             case "number":
@@ -104,6 +90,7 @@ function calcContentType(
                 return "text/plain";
         }
     }
-    //Default content type.
+
+    // Default content type.
     return "application/x-www-form-urlencoded; charset=UTF-8";
 }
