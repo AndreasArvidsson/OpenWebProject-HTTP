@@ -15,6 +15,27 @@ npm install owp.http --save
 import HTTP from "owp.http";
 ```
 
+## Example usage
+
+```ts
+const restBase = new HTTP("http://www.mysite.com/rest", { cache: true });
+const userService = restBase.path("management", "users");
+
+userService
+    .get({ params: { id: "123" } })
+    .then(async (response) => {
+        const data = await response.json();
+        const contentType = response.header("Content-Type");
+        await response.download();
+    })
+    .catch((error) => {
+        if (error instanceof HttpResponse) {
+            console.error(error.status, response.statusText);
+        }
+        console.error(error);
+    });
+```
+
 ## Static requests
 
 ```ts
@@ -177,6 +198,46 @@ http.get({ cache: true }).then((cachedResponse: HttpResponse) => {
 });
 ```
 
+## Request interceptor
+
+Callback to format/update request. Useful for updating auth credentials.
+
+```ts
+requestInterceptor: (
+    request: HttpRequest,
+): HttpRequest | Promise<HttpRequest> => {
+    // Update auth credentials
+    request.headers.Authorization = "...";
+    // Return updated request
+    return request;
+    // Or return Promise
+    return Promise.resolve(request);
+    // Returning rejected promise rejects the entire http request
+    return Promise.reject("Error");
+};
+```
+
+## Response interceptor
+
+Callback to format/update response. Useful for logging errors.
+
+```ts
+responseInterceptor: (
+    response: HttpResponse,
+): HttpResponse | Promise<HttpResponse> => {
+    // Log errors
+    if (!response.ok) {
+        console.error(response.statusText);
+    }
+    // Return updated response
+    return new CustomHttpResponse(...);
+    // Or return Promise
+    return Promise.resolve(response);
+    // Returning rejected promise rejects the entire http request
+    return Promise.reject("Error");
+};
+```
+
 ## State change interceptor
 
 Callback to trigger on every state change on the underlying XMLHttp​Request​.  
@@ -199,50 +260,6 @@ Callback to trigger on every progress update on the underlying XMLHttp​Request
 
 ```ts
 progressInterceptor: (loaded: number, total: number): void => {
-    console.log(loaded / total);
-};
-```
-
-## Request interceptor
-
-Callback to format/update request. Useful for updating auth credentials.
-
-```ts
-requestInterceptor: (
-    request: HttpRequest,
-): HttpRequest | Promise<HttpRequest> => {
-    // Update auth credentials
-    request.headers.Authorization = "...";
-    // Return updated request
-    return request;
-    // Or return Promise.
-    return Promise.resolve(request);
-    // Returning rejected promise rejects the entire http request.
-    return Promise.reject("Error");
-};
-```
-
-## Response interceptor
-
-Callback to format/update response. Useful for logging errors.
-
-```ts
-responseInterceptor: (
-    response: HttpResponse,
-): HttpResponse | Promise<HttpResponse> => {
-    // Change response
-    if (response.data == null) {
-        response.data = "No Data, but ok";
-    }
-    // Log errors
-    if (!response.ok) {
-        console.error(response.statusText);
-    }
-    // Return updated response.
-    return response;
-    // Or return Promise.
-    return Promise.resolve(response);
-    // Returning rejected promise rejects the entire http request.
-    return Promise.reject("Error");
+    console.log((100 * loaded) / total, "%");
 };
 ```

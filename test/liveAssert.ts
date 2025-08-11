@@ -232,12 +232,11 @@ const testResponseInterceptor = async () => {
         .catch((e) => assert.fail("testResponseInterceptor2", e));
 
     await HTTP.get(urlGet, {
-        responseInterceptor: (r) => new JsonpResponse(r.url, 400, "", "Doh!"),
+        responseInterceptor: () => Promise.reject("Doh!"),
     })
         .then((r) => assert.fail("testResponseInterceptor: Expected exception"))
-        .catch(async (r) => {
-            const data = await r.json();
-            assert.equals("testResponseInterceptor: catch", "Doh!", data);
+        .catch((r) => {
+            assert.equals("testResponseInterceptor: catch", "Doh!", r);
         });
 };
 

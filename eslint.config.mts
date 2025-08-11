@@ -3,7 +3,6 @@ import eslintPrettier from "eslint-config-prettier/flat";
 import eslintTs from "typescript-eslint";
 
 export default eslintTs.config(
-    // { ignores: ["src/typings", "eslint.config.mts"] },
     eslintJs.configs.recommended,
     eslintTs.configs.recommendedTypeChecked,
     eslintPrettier,
@@ -13,7 +12,7 @@ export default eslintTs.config(
             ecmaVersion: "latest",
             sourceType: "module",
             parserOptions: {
-                project: true,
+                projectService: true,
             },
         },
 
@@ -38,5 +37,9 @@ export default eslintTs.config(
                 },
             ],
         },
+    },
+    {
+        files: ["eslint.config.mts", "test/**/*"],
+        extends: [eslintTs.configs.disableTypeChecked],
     },
 );
