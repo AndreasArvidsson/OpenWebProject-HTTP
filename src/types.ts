@@ -23,7 +23,7 @@ export interface HttpRequest extends HttpOptions {
 }
 
 type QueryParam = string | number | boolean | null | undefined;
-
+export type Url = string | [string, ...PathParam[]];
 export type Json = string | number | boolean | null | object;
 export type PathParam = string | number | false | null | undefined;
 export type HttpParams = Record<string, QueryParam | QueryParam[]>;

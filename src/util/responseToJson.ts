@@ -1,14 +1,12 @@
+import { xhrHasText } from "./xhrHasText";
+
 export function xhrToJson<T>(xhr: XMLHttpRequest): T {
     if (xhr.responseType === "json") {
         return xhr.response as T;
     }
 
-    return textToJson<T>(xhr.responseText);
-}
-
-export function textToJson<T>(responseText: string): T {
-    if (responseText) {
-        return JSON.parse(responseText) as T;
+    if (xhrHasText(xhr) && xhr.responseText) {
+        return JSON.parse(xhr.responseText) as T;
     }
 
     throw new Error("Response is not JSON");

@@ -1,6 +1,7 @@
 import { download } from "./util/download";
 import { getXhrHeaders } from "./util/getXhrHeaders";
-import { textToJson, xhrToJson } from "./util/responseToJson";
+import { xhrToJson } from "./util/responseToJson";
+import { xhrHasText } from "./util/xhrHasText";
 
 export abstract class HttpResponse {
     public readonly ok: boolean;
@@ -9,7 +10,7 @@ export abstract class HttpResponse {
         public readonly url: string,
         public readonly status: number,
         public readonly statusText: string,
-        public readonly text: string,
+        public readonly text: string | undefined,
     ) {
         this.ok = (status >= 200 && status < 300) || status === 304;
     }
@@ -22,7 +23,8 @@ export abstract class HttpResponse {
 
 export class XhrResponse extends HttpResponse {
     constructor(private readonly xhr: XMLHttpRequest) {
-        super(xhr.responseURL, xhr.status, xhr.statusText, xhr.responseText);
+        const responseText = xhrHasText(xhr) ? xhr.responseText : undefined;
+        super(xhr.responseURL, xhr.status, xhr.statusText, responseText);
     }
 
     header(name: string) {
@@ -47,9 +49,9 @@ export class JsonpResponse extends HttpResponse {
         readonly url: string,
         readonly status: number,
         readonly statusText: string,
-        readonly text: string,
+        private readonly data: unknown,
     ) {
-        super(url, status, statusText, text);
+        super(url, status, statusText, undefined);
     }
 
     header(_name: string) {
@@ -61,7 +63,7 @@ export class JsonpResponse extends HttpResponse {
     }
 
     json<T>(): T {
-        return textToJson<T>(this.text);
+        return this.data as T;
     }
 
     download(filename?: string) {

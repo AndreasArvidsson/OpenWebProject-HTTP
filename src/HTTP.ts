@@ -4,9 +4,9 @@
  */
 
 import { execRequest } from "./execRequest";
-import type { HttpOptions, Method, PathParam } from "./types";
+import type { HttpOptions, Method, PathParam, Url } from "./types";
 import { mergeOptions } from "./util/mergeOptions";
-import { updateUrl } from "./util/updateUrl";
+import { parseUrl, updateUrl } from "./util/updateUrl";
 
 export default class HTTP {
     private static options: HttpOptions = {};
@@ -14,25 +14,25 @@ export default class HTTP {
     private readonly _url: string;
     private readonly _options: HttpOptions;
 
-    static get(url: string, options?: HttpOptions) {
+    static get(url: Url, options?: HttpOptions) {
         return exec("GET", url, options);
     }
-    static delete(url: string, options?: HttpOptions) {
+    static delete(url: Url, options?: HttpOptions) {
         return exec("DELETE", url, options);
     }
-    static head(url: string, options?: HttpOptions) {
+    static head(url: Url, options?: HttpOptions) {
         return exec("HEAD", url, options);
     }
-    static put(url: string, options?: HttpOptions) {
+    static put(url: Url, options?: HttpOptions) {
         return exec("PUT", url, options);
     }
-    static patch(url: string, options?: HttpOptions) {
+    static patch(url: Url, options?: HttpOptions) {
         return exec("PATCH", url, options);
     }
-    static post(url: string, options?: HttpOptions) {
+    static post(url: Url, options?: HttpOptions) {
         return exec("POST", url, options);
     }
-    static jsonp(url: string, options?: HttpOptions) {
+    static jsonp(url: Url, options?: HttpOptions) {
         return exec("JSONP", url, options);
     }
 
@@ -46,8 +46,8 @@ export default class HTTP {
         return HTTP.options;
     }
 
-    constructor(url: string, options: HttpOptions = {}) {
-        this._url = url;
+    constructor(url: Url, options: HttpOptions = {}) {
+        this._url = parseUrl(url);
         this._options = mergeOptions(options);
     }
 
@@ -96,10 +96,13 @@ export default class HTTP {
 
 function exec(
     method: Method,
-    url: string,
+    url: Url,
     optionsA?: HttpOptions,
     optionsB?: HttpOptions,
 ) {
-    const updatedOptions = mergeOptions(HTTP.getOptions(), optionsA, optionsB);
-    return execRequest({ url, method, ...updatedOptions });
+    return execRequest({
+        method,
+        url: parseUrl(url),
+        ...mergeOptions(HTTP.getOptions(), optionsA, optionsB),
+    });
 }

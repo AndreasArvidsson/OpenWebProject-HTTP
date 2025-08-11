@@ -4,7 +4,7 @@ import type { HttpRequest, Json, Method } from "./types";
 import { calcQueryParmsString } from "./util/calcQueryParmsString";
 import { Headers, MimeTypes } from "./util/constants";
 
-export function processXhr(
+export function execXhr(
     url: string,
     method: Method,
     {

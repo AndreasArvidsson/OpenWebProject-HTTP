@@ -1,7 +1,7 @@
 import cache from "./cache";
+import { execJsonp } from "./execJsonp";
+import { execXhr } from "./execXhr";
 import type { HttpResponse } from "./HttpResponse";
-import { processJsonp } from "./processJsonp";
-import { processXhr } from "./processXhr";
 import type { HttpRequest } from "./types";
 import { calcQueryParmsString } from "./util/calcQueryParmsString";
 
@@ -20,17 +20,17 @@ export async function execRequest({
 
     const process = () => {
         return method === "JSONP"
-            ? processJsonp(url, queryString != null, request)
-            : processXhr(url, method, request);
+            ? execJsonp(url, queryString != null, request)
+            : execXhr(url, method, request);
     };
 
-    const response = request.cache
+    let response = request.cache
         ? await cache.get(method + url, process)
         : await process();
 
     // Response based on interceptor.
     if (request.responseInterceptor != null) {
-        return request.responseInterceptor(response);
+        response = request.responseInterceptor(response);
     }
 
     if (response.ok) {

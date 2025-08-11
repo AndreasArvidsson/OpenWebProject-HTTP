@@ -1,82 +1,9 @@
-import { xhr } from "../src/xhr";
 import assert from "./assert";
 
 const url = "https://petstore.swagger.io/v2/swagger.json";
 const urlLarge =
     "https://raw.githubusercontent.com/json-iterator/test-data/refs/heads/master/large-file.json";
 type Response = [string, unknown, unknown];
-
-const testXhr = async (): Promise<Response> => {
-    let count = 0;
-
-    await xhr({ url, cache: true, method: "GET", fullResponse: true }).then((r: any) => {
-        ++count;
-        assert.equals("fullResponse", true, r.ok);
-        assert.equals("basePath", "/v2", r.data.basePath);
-    });
-
-    await xhr({ url, cache: true }).then((r: any) => {
-        ++count;
-        assert.equals("fullResponse", undefined, r.ok);
-        assert.equals("basePath", "/v2", r.basePath);
-    });
-
-    // await xhr({ url: url + 1 })
-    //     .catch(r => {
-    //         ++count;
-    //         Assert.equals("fullResponse", false, r.ok);
-    //         Assert.equals("basePath", 404, r.status);
-    //     })
-
-    return ["testXhr", 2, count];
-};
-
-const testPost = async (): Promise<Response> => {
-    let count = 0;
-
-    // await xhr({
-    //     url,
-    //     method: "POST",
-    //     json: {a:2,b:3}
-    // })
-    //     .catch(r => {
-    //         ++count;
-    //         Assert.equals("fullResponse", false, r.ok);
-    //         Assert.equals("basePath", 404, r.status);
-    //     })
-
-    return ["testXhr", 0, count];
-};
-
-const testJsonp = async (): Promise<Response> => {
-    const url = "https://itunes.apple.com/search";
-    let count = 0;
-
-    await xhr({
-        method: "JSONP",
-        url,
-        params: { term: "a", media: "music", limit: 20 },
-        fullResponse: true,
-        cache: true
-    }).then((r: any) => {
-        ++count;
-        assert.equals("fullResponse", true, r.ok);
-        assert.equals("resultCount", 20, r.data.resultCount);
-    });
-
-    await xhr({
-        method: "JSONP",
-        url,
-        params: { term: "a", media: "music", limit: 20 },
-        cache: true
-    }).then((r: any) => {
-        ++count;
-        assert.equals("fullResponse", undefined, r.ok);
-        assert.equals("resultCount", 20, r.resultCount);
-    });
-
-    return ["testJsonp", 2, count];
-};
 
 const testStateChangeInterceptor = async (): Promise<Response> => {
     let count = 0;
@@ -88,7 +15,7 @@ const testStateChangeInterceptor = async (): Promise<Response> => {
         url,
         stateChangeInterceptor: () => {
             ++count;
-        }
+        },
     }).then((r: any) => {
         ++count;
         assert.equals("fullResponse", true, r.ok);
@@ -108,7 +35,7 @@ const testProgressInterceptor = async (): Promise<Response> => {
         progressInterceptor: (l, t) => {
             loaded = l;
             total = t;
-        }
+        },
     });
 
     assert.equals("total", 3844333, total);
@@ -125,7 +52,7 @@ const testRequestInterceptor = async (): Promise<Response> => {
         requestInterceptor: (r) => {
             assert.equals("url", url, r.url);
             return r;
-        }
+        },
     }).then((r: any) => {
         ++count;
         assert.equals("fullResponse", undefined, r.ok);
@@ -135,7 +62,7 @@ const testRequestInterceptor = async (): Promise<Response> => {
     await xhr({
         url,
         cache: true,
-        requestInterceptor: (r) => Promise.resolve(r)
+        requestInterceptor: (r) => Promise.resolve(r),
     }).then((r: any) => {
         ++count;
         assert.equals("fullResponse", undefined, r.ok);
@@ -145,7 +72,7 @@ const testRequestInterceptor = async (): Promise<Response> => {
     await xhr({
         url,
         cache: true,
-        requestInterceptor: () => Promise.reject("Doh!")
+        requestInterceptor: () => Promise.reject("Doh!"),
     }).catch((r) => {
         ++count;
         assert.equals("reject", "Doh!", r);
@@ -165,7 +92,7 @@ const testResponseInterceptor = async (): Promise<Response> => {
             assert.equals("basePath", "/v2", r.data.basePath);
             r.tmp = 10;
             return r;
-        }
+        },
     }).then((r: any) => {
         ++count;
         assert.equals("fullResponse", true, r.ok);
@@ -176,7 +103,7 @@ const testResponseInterceptor = async (): Promise<Response> => {
     await xhr({
         url,
         cache: true,
-        responseInterceptor: (r) => Promise.resolve(10)
+        responseInterceptor: (r) => Promise.resolve(10),
     }).then((r) => {
         ++count;
         assert.equals("resolve", 10, r);
@@ -185,7 +112,7 @@ const testResponseInterceptor = async (): Promise<Response> => {
     await xhr({
         url,
         cache: true,
-        responseInterceptor: () => Promise.reject("Doh!")
+        responseInterceptor: () => Promise.reject("Doh!"),
     }).catch((r) => {
         ++count;
         assert.equals("catch", "Doh!", r);
@@ -195,16 +122,13 @@ const testResponseInterceptor = async (): Promise<Response> => {
 };
 
 (async () => {
-    console.log("test/testXhr.js");
+    console.log("test/testInterceptors.js");
 
     let res: Response[] = [
-        await testXhr(),
-        await testPost(),
-        await testJsonp(),
         await testStateChangeInterceptor(),
         await testProgressInterceptor(),
         await testRequestInterceptor(),
-        await testResponseInterceptor()
+        await testResponseInterceptor(),
     ];
 
     res.forEach(([message, a, b]) => {

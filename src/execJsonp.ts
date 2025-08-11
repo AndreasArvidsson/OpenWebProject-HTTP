@@ -5,7 +5,7 @@ type WindowWithJsonp = Window & {
     [key: string]: unknown;
 };
 
-export function processJsonp(
+export function execJsonp(
     url: string,
     paramsUsed: boolean,
     request: HttpRequest,
@@ -17,7 +17,7 @@ export function processJsonp(
         const script = document.createElement("script");
         script.src = `${url}${paramsUsed ? "&" : "?"}callback=${callbackName}`;
 
-        const done = (ok: boolean, text: string) => {
+        const done = (ok: boolean, data: unknown) => {
             delete myWindow[callbackName];
             document.body.removeChild(script);
 
@@ -30,13 +30,13 @@ export function processJsonp(
                     url,
                     ok ? 200 : 400,
                     ok ? "OK" : "Bad Request",
-                    text,
+                    data,
                 ),
             );
         };
 
         // On success callback
-        myWindow[callbackName] = (data: string) => {
+        myWindow[callbackName] = (data: unknown) => {
             done(true, data);
         };
 
