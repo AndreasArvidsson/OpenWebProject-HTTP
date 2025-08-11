@@ -7,7 +7,7 @@ type WindowWithJsonP = Window & {
 
 const myWindow = window as unknown as WindowWithJsonP;
 
-export function processJsonP(
+export function processJsonp(
     url: string,
     paramsUsed: boolean,
     request: HttpRequest,

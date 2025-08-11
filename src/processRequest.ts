@@ -1,6 +1,6 @@
 import cache from "./cache";
 import type { HttpResponse } from "./HttpResponse";
-import { processJsonP } from "./processJsonP";
+import { processJsonp } from "./processJsona";
 import { processXhr } from "./processXhr";
 import type { HttpRequest } from "./types";
 import { calcQueryParmsString } from "./util/calcQueryParmsString";
@@ -20,7 +20,7 @@ export async function processRequest({
 
     const process = () => {
         return method === "JSONP"
-            ? processJsonP(url, queryString != null, request)
+            ? processJsonp(url, queryString != null, request)
             : processXhr(url, method, request);
     };
 
