@@ -72,7 +72,7 @@ const promise = http.path("data").jsonp(options);
 ## Path parameters
 
 ```ts
-const id = "Fo%Bar";
+const id = "FooBar";
 
 // Static request. All paths string after the first(base) one is uri encoded.
 const promise = HTTP.get(["http://www.mysite.com/rest/data", id, "subpath"]);
@@ -172,7 +172,7 @@ http.get({ responseType: "blob" }).then((blob: Blob) => {
 Enable cache. Matches method+url and caches response.
 
 ```ts
-http.get({ cache: true }).then((cachedResponse: any) => {
+http.get({ cache: true }).then((cachedResponse: HttpResponse) => {
     // Response is fetched from cache.
 });
 ```
@@ -208,7 +208,9 @@ progressInterceptor: (loaded: number, total: number): void => {
 Callback to format/update request. Useful for updating auth credentials.
 
 ```ts
-requestInterceptor: (request: HttpRequest): HttpRequest | Promise<Request> => {
+requestInterceptor: (
+    request: HttpRequest,
+): HttpRequest | Promise<HttpRequest> => {
     // Update auth credentials
     request.headers.Authorization = "...";
     // Return updated request
