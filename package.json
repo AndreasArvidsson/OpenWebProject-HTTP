@@ -34,6 +34,7 @@
         "@types/node": "^24.2.1",
         "@typescript-eslint/eslint-plugin": "^5.62.0",
         "@typescript-eslint/parser": "^5.62.0",
+        "downloadjs": "^1.4.7",
         "esbuild": "^0.25.8",
         "eslint": "^8.57.1",
         "glob": "^11.0.3",

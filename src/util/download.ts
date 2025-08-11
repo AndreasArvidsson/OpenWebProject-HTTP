@@ -1,8 +1,7 @@
+import type Downloadjs from "downloadjs";
 import type { HttpResponse } from "../HttpResponse";
 
-type Downloadjs = (data: Blob, filename?: string, mimeType?: string) => void;
-
-let cached: Downloadjs | null = null;
+let cached: typeof Downloadjs | null = null;
 
 export async function download(
     response: HttpResponse,
@@ -10,15 +9,10 @@ export async function download(
 ): Promise<void> {
     const downloadjs = await getDownloadJs();
 
-    if (response.xhr.responseType !== "blob") {
-        throw new Error("Response type must be 'blob' for download().");
-    }
-
-    const data = response.xhr.response as Blob;
     const contentType = response.header("content-type") ?? undefined;
 
     downloadjs(
-        data,
+        response.xhr.response,
         filename || calcFilename(response, contentType),
         contentType,
     );
@@ -28,10 +22,10 @@ async function getDownloadJs() {
     if (cached == null) {
         try {
             const mod = await import("downloadjs");
-            cached = (mod.default ?? (mod as any)) as Downloadjs;
+            cached = mod.default;
         } catch {
             throw new Error(
-                "This feature requires the 'downloadjs' package. Install it with 'npm i downloadjs'.",
+                "Download requires the 'downloadjs' package. Install it with 'npm i downloadjs'.",
             );
         }
     }
@@ -46,8 +40,13 @@ function calcFilename(
     const disposition = response.header("content-disposition");
 
     if (disposition) {
-        const i = disposition.indexOf("filename=") + "filename=".length + 1;
-        return disposition.substring(i, disposition.length - 1);
+        const i = disposition.indexOf("filename=");
+        if (i > -1) {
+            return disposition.substring(
+                i + "filename=".length + 1,
+                disposition.length - 1,
+            );
+        }
     }
 
     // Then use last part of url.
