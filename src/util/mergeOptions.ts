@@ -7,7 +7,10 @@ type Mutable<T> = {
 export function mergeOptions(
     ...options: (HttpOptions | undefined)[]
 ): HttpOptions {
-    const result: Mutable<HttpOptions> = {};
+    const result: Mutable<HttpOptions> = {
+        params: {},
+        headers: {},
+    };
 
     for (const option of options) {
         if (option != null) {

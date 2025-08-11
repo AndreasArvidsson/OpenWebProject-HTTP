@@ -1,11 +1,9 @@
 import { JsonpResponse, type HttpResponse } from "./HttpResponse";
 import type { HttpRequest } from "./types";
 
-type WindowWithJsonP = Window & {
+type WindowWithJsonp = Window & {
     [key: string]: unknown;
 };
-
-const myWindow = window as unknown as WindowWithJsonP;
 
 export function processJsonp(
     url: string,
@@ -14,6 +12,7 @@ export function processJsonp(
 ): Promise<HttpResponse> {
     return new Promise((resolve) => {
         const { stateChangeInterceptor } = request;
+        const myWindow = window as unknown as WindowWithJsonp;
         const callbackName = `jsonp_${Date.now()}_${Math.round(1000000 * Math.random())}`;
         const script = document.createElement("script");
         script.src = `${url}${paramsUsed ? "&" : "?"}callback=${callbackName}`;
