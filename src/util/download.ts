@@ -8,8 +8,7 @@ export async function download(
     filename: string | undefined,
 ): Promise<void> {
     const downloadjs = await getDownloadJs();
-
-    const contentType = response.header("content-type") ?? undefined;
+    const contentType = response.header("content-type");
 
     downloadjs(
         response.xhr.response,

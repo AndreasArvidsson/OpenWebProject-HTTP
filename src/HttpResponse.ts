@@ -19,8 +19,8 @@ export class HttpResponse {
         this.text = xhr.responseText;
     }
 
-    header(name: string): string | null {
-        return this.xhr.getResponseHeader(name);
+    header(name: string): string | undefined {
+        return this.xhr.getResponseHeader(name) ?? undefined;
     }
 
     headers(): Record<string, string> {
