@@ -1,37 +1,70 @@
 import { download } from "./util/download";
 import { getXhrHeaders } from "./util/getXhrHeaders";
-import { xhrToJson } from "./util/xhrToJson";
+import { textToJson, xhrToJson } from "./util/responseToJson";
 
-export class HttpResponse {
-    readonly xhr: XMLHttpRequest;
-    readonly url: string;
-    readonly ok: boolean;
-    readonly status: number;
-    readonly statusText: string;
-    readonly text: string;
+export abstract class HttpResponse {
+    public readonly ok: boolean;
 
-    constructor(xhr: XMLHttpRequest) {
-        this.xhr = xhr;
-        this.ok = (xhr.status >= 200 && xhr.status < 300) || xhr.status === 304;
-        this.url = xhr.responseURL;
-        this.status = xhr.status;
-        this.statusText = xhr.statusText;
-        this.text = xhr.responseText;
+    constructor(
+        public readonly url: string,
+        public readonly status: number,
+        public readonly statusText: string,
+        public readonly text: string,
+    ) {
+        this.ok = (status >= 200 && status < 300) || status === 304;
     }
 
-    header(name: string): string | undefined {
+    abstract header(name: string): string | undefined;
+    abstract headers(): Record<string, string>;
+    abstract json<T>(): T;
+    abstract download(filename?: string): Promise<void>;
+}
+
+export class XhrResponse extends HttpResponse {
+    constructor(private readonly xhr: XMLHttpRequest) {
+        super(xhr.responseURL, xhr.status, xhr.statusText, xhr.responseText);
+    }
+
+    header(name: string) {
         return this.xhr.getResponseHeader(name) ?? undefined;
     }
 
-    headers(): Record<string, string> {
+    headers() {
         return getXhrHeaders(this.xhr);
     }
 
-    json<T>(): T {
+    json<T>() {
         return xhrToJson<T>(this.xhr);
     }
 
-    download(filename?: string): Promise<void> {
-        return download(this, filename);
+    download(filename?: string) {
+        return download(this, this.xhr.response, filename);
+    }
+}
+
+export class JsonpResponse extends HttpResponse {
+    constructor(
+        readonly url: string,
+        readonly status: number,
+        readonly statusText: string,
+        readonly text: string,
+    ) {
+        super(url, status, statusText, text);
+    }
+
+    header(_name: string) {
+        return undefined;
+    }
+
+    headers() {
+        return {};
+    }
+
+    json<T>(): T {
+        return textToJson<T>(this.text);
+    }
+
+    download(filename?: string) {
+        return download(this, this.text, filename);
     }
 }

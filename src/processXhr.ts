@@ -1,6 +1,8 @@
-import { HttpResponse } from "./HttpResponse";
+import type { HttpResponse } from "./HttpResponse";
+import { XhrResponse } from "./HttpResponse";
 import type { HttpRequest, Json, Method } from "./types";
 import { calcQueryParmsString } from "./util/calcQueryParmsString";
+import { Headers, MimeTypes } from "./util/constants";
 
 export function processXhr(
     url: string,
@@ -33,7 +35,7 @@ export function processXhr(
         }
 
         xhr.onloadend = () => {
-            resolve(new HttpResponse(xhr));
+            resolve(new XhrResponse(xhr));
         };
 
         // async=true
@@ -47,7 +49,7 @@ export function processXhr(
         }
 
         xhr.setRequestHeader(
-            "content-type",
+            Headers.contentType,
             calcContentType(contentType, json, data),
         );
 
@@ -81,7 +83,7 @@ function calcContentType(
 
     // null is valid json
     if (json !== undefined) {
-        return "application/json";
+        return MimeTypes.json;
     }
 
     if (data != null) {
@@ -89,10 +91,10 @@ function calcContentType(
             case "boolean":
             case "number":
             case "string":
-                return "text/plain";
+                return MimeTypes.text;
         }
     }
 
     // Default content type
-    return "application/x-www-form-urlencoded; charset=UTF-8";
+    return MimeTypes.formUrlEncoded;
 }

@@ -1,20 +1,17 @@
 import type Downloadjs from "downloadjs";
 import type { HttpResponse } from "../HttpResponse";
+import { Headers } from "./constants";
 
 let cached: typeof Downloadjs | null = null;
 
 export async function download(
     response: HttpResponse,
+    data: unknown,
     filename: string | undefined,
 ): Promise<void> {
     const downloadjs = await getDownloadJs();
-    const contentType = response.header("content-type");
 
-    downloadjs(
-        response.xhr.response,
-        filename || calcFilename(response, contentType),
-        contentType,
-    );
+    downloadjs(data, filename || calcFilename(response));
 }
 
 async function getDownloadJs() {
@@ -31,12 +28,9 @@ async function getDownloadJs() {
     return cached;
 }
 
-function calcFilename(
-    response: HttpResponse,
-    contentType: string | undefined,
-): string {
+function calcFilename(response: HttpResponse): string {
     // First look for content-disposition header.
-    const disposition = response.header("content-disposition");
+    const disposition = response.header(Headers.contentDisposition);
 
     if (disposition) {
         const i = disposition.indexOf("filename=");
@@ -57,14 +51,5 @@ function calcFilename(
     }
 
     const parts = url.split("/").filter(Boolean);
-    const name = parts.length > 0 ? parts[parts.length - 1] : "download";
-
-    // If content type is json make sure it has a json ending.
-    const ext =
-        contentType === "application/json" &&
-        !name.toLowerCase().endsWith(".json")
-            ? ".json"
-            : "";
-
-    return name + ext;
+    return parts.length > 0 ? parts[parts.length - 1] : "download";
 }

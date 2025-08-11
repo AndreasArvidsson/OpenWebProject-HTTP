@@ -1,5 +1,5 @@
 export { default } from "./HTTP";
-export type { HttpResponse } from "./HttpResponse";
+export { HttpResponse } from "./HttpResponse";
 export type {
     HttpHeaders,
     HttpOptions,

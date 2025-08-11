@@ -1,5 +1,11 @@
-import type { HttpResponse } from "./HttpResponse";
+import { JsonpResponse, type HttpResponse } from "./HttpResponse";
 import type { HttpRequest } from "./types";
+
+type WindowWithJsonP = Window & {
+    [key: string]: unknown;
+};
+
+const myWindow = window as unknown as WindowWithJsonP;
 
 export function processJsonP(
     url: string,
@@ -12,43 +18,31 @@ export function processJsonP(
         const script = document.createElement("script");
         script.src = `${url}${paramsUsed ? "&" : "?"}callback=${callbackName}`;
 
-        const done = (ok: boolean, data: any) => {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-            delete (window as any)[callbackName];
+        const done = (ok: boolean, text: string) => {
+            delete myWindow[callbackName];
             document.body.removeChild(script);
 
             if (stateChangeInterceptor != null) {
                 stateChangeInterceptor(XMLHttpRequest.DONE);
             }
 
-            // function calcJsonpFullResponse(
-            //     ok: boolean,
-            //     url: string,
-            //     data: any,
-            // ): HttpResponse {
-            //     return {
-            //         ok,
-            //         url,
-            //         status: ok ? 200 : 400,
-            //         statusText: ok ? "OK" : "Bad Request",
-            //         headers: {},
-            //         data,
-            //         text: null,
-            //     };
-            // }
-
-            // TODO:
-            // resolve(calcJsonpFullResponse(ok, url, data));
+            resolve(
+                new JsonpResponse(
+                    url,
+                    ok ? 200 : 400,
+                    ok ? "OK" : "Bad Request",
+                    text,
+                ),
+            );
         };
 
-        //On success callback
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-        (window as any)[callbackName] = (data: any) => {
+        // On success callback
+        myWindow[callbackName] = (data: string) => {
             done(true, data);
         };
 
         script.onerror = () => {
-            done(false, null);
+            done(false, "");
         };
 
         if (stateChangeInterceptor != null) {
