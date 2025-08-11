@@ -20,20 +20,20 @@ export default eslintTs.config(
             "@typescript-eslint/consistent-type-imports": "error",
             "@typescript-eslint/naming-convention": "error",
             "@typescript-eslint/no-explicit-any": "off",
-            curly: "error",
-            "no-warning-comments": "warn",
-            eqeqeq: [
-                "error",
-                "always",
-                {
-                    null: "never",
-                },
-            ],
             "@typescript-eslint/no-unused-vars": [
                 "warn",
                 {
                     argsIgnorePattern: "^_",
                     caughtErrorsIgnorePattern: "^_",
+                },
+            ],
+            "no-warning-comments": "warn",
+            curly: "error",
+            eqeqeq: [
+                "error",
+                "always",
+                {
+                    null: "never",
                 },
             ],
         },
