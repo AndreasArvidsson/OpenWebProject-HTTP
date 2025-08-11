@@ -2,9 +2,9 @@ import type { HttpParams } from "../types";
 
 export function calcQueryParmsString(
     params: HttpParams | undefined,
-): string | null {
+): string | undefined {
     if (params == null) {
-        return null;
+        return undefined;
     }
 
     const parts: string[] = [];
@@ -31,5 +31,5 @@ export function calcQueryParmsString(
         return parts.join("&");
     }
 
-    return null;
+    return undefined;
 }

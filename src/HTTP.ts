@@ -11,8 +11,8 @@ import { updateUrl } from "./util/updateUrl";
 export default class HTTP {
     private static options: HttpOptions = {};
 
-    private url: string;
-    private options: HttpOptions;
+    private readonly _url: string;
+    private readonly _options: HttpOptions;
 
     static get(url: string, options?: HttpOptions) {
         return HTTP.process("GET", url, options);
@@ -39,6 +39,12 @@ export default class HTTP {
     static useOptions(options: HttpOptions) {
         mergeOptions(HTTP.options, options);
     }
+    static setOptions(options: HttpOptions) {
+        HTTP.options = options;
+    }
+    static getOptions(): HttpOptions {
+        return HTTP.options;
+    }
 
     private static process(
         method: Method,
@@ -51,8 +57,15 @@ export default class HTTP {
     }
 
     constructor(url: string, options: HttpOptions = {}) {
-        this.url = url;
-        this.options = options;
+        this._url = url;
+        this._options = options;
+    }
+
+    getUrl(): string {
+        return this._url;
+    }
+    getOptions(): HttpOptions {
+        return this._options;
     }
 
     get(options?: HttpOptions) {
@@ -78,11 +91,15 @@ export default class HTTP {
     }
 
     path(...params: PathParam[]) {
-        const url = updateUrl(this.url, params);
-        return new HTTP(url, this.options);
+        const url = updateUrl(this._url, params);
+        return new HTTP(url, this._options);
+    }
+    options(options: HttpOptions) {
+        const updatedOptions = mergeOptions(this._options, options);
+        return new HTTP(this._url, updatedOptions);
     }
 
     private process(method: Method, options: HttpOptions | undefined) {
-        return HTTP.process(method, this.url, this.options, options);
+        return HTTP.process(method, this._url, this._options, options);
     }
 }

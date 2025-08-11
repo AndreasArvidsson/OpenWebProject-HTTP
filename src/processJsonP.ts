@@ -21,23 +21,24 @@ export function processJsonP(
                 stateChangeInterceptor(XMLHttpRequest.DONE);
             }
 
-            function calcJsonpFullResponse(
-                ok: boolean,
-                url: string,
-                data: any,
-            ): HttpResponse {
-                return {
-                    ok,
-                    url,
-                    status: ok ? 200 : 400,
-                    statusText: ok ? "OK" : "Bad Request",
-                    headers: {},
-                    data,
-                    text: null,
-                };
-            }
+            // function calcJsonpFullResponse(
+            //     ok: boolean,
+            //     url: string,
+            //     data: any,
+            // ): HttpResponse {
+            //     return {
+            //         ok,
+            //         url,
+            //         status: ok ? 200 : 400,
+            //         statusText: ok ? "OK" : "Bad Request",
+            //         headers: {},
+            //         data,
+            //         text: null,
+            //     };
+            // }
 
-            resolve(calcJsonpFullResponse(ok, url, data));
+            // TODO:
+            // resolve(calcJsonpFullResponse(ok, url, data));
         };
 
         //On success callback
@@ -51,7 +52,7 @@ export function processJsonP(
         };
 
         if (stateChangeInterceptor != null) {
-            stateChangerInterceptor(XMLHttpRequest.OPENED);
+            stateChangeInterceptor(XMLHttpRequest.OPENED);
         }
 
         document.body.appendChild(script);

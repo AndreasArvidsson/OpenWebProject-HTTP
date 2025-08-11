@@ -1,18 +1,22 @@
 import type { HttpResponse } from "./HttpResponse";
 
 export interface HttpOptions {
-    params?: HttpParams;
-    headers?: HttpHeaders;
-    cache?: boolean;
-    data?: string;
-    json?: object;
-    contentType?: string;
-    responseType?: XMLHttpRequestResponseType;
+    readonly params?: HttpParams;
+    readonly headers?: HttpHeaders;
+    readonly cache?: boolean;
+    readonly data?: string;
+    readonly json?: object;
+    readonly contentType?: string;
+    readonly responseType?: XMLHttpRequestResponseType;
 
-    requestInterceptor?: (request: HttpRequest) => HttpRequest | Promise<HttpRequest>;
-    responseInterceptor?: (response: HttpResponse) => any | Promise<any>;
-    stateChangeInterceptor?: (readyState: number) => void;
-    progressInterceptor?: (loaded: number, total: number) => void;
+    readonly requestInterceptor?: (
+        request: HttpRequest,
+    ) => HttpRequest | Promise<HttpRequest>;
+    readonly responseInterceptor?: (
+        response: HttpResponse,
+    ) => any | Promise<any>;
+    readonly stateChangeInterceptor?: (readyState: number) => void;
+    readonly progressInterceptor?: (loaded: number, total: number) => void;
 }
 
 export interface HttpRequest extends HttpOptions {
@@ -26,4 +30,11 @@ type Param = Primary | null | undefined;
 export type PathParam = string | number | false | null | undefined;
 export type HttpParams = Record<string, Param | Param[]>;
 export type HttpHeaders = Record<string, string | null | undefined>;
-export type Method = "GET" | "DELETE" | "HEAD" | "PUT" | "PATCH" | "POST" | "JSONP";
+export type Method =
+    | "GET"
+    | "DELETE"
+    | "HEAD"
+    | "PUT"
+    | "PATCH"
+    | "POST"
+    | "JSONP";
