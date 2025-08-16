@@ -17,8 +17,11 @@ export async function download(
 async function getDownloadJs() {
     if (cached == null) {
         try {
-            const mod = await import("downloadjs");
-            cached = mod.default;
+            const { default: downloadjs } = await import(
+                /* webpackChunkName: "downloadjs" */
+                "downloadjs"
+            );
+            cached = downloadjs;
         } catch {
             throw new Error(
                 "Download requires the 'downloadjs' package. Install it with 'npm i downloadjs'.",

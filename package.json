@@ -1,14 +1,14 @@
 {
     "name": "owp.http",
     "description": "HTTP client for JavaScript",
-    "version": "4.1.0",
+    "version": "4.5.0",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "files": [
         "lib/*"
     ],
     "scripts": {
-        "build": "tsc -p .",
+        "build": "rm -fr lib && tsc -p .",
         "test": "tsx test/runTests.ts",
         "start": "tsx test/esbuildTest.ts",
         "lint": "eslint src",

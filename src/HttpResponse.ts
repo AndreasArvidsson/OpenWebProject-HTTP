@@ -59,6 +59,9 @@ export class XhrResponse extends HttpResponse {
     }
 
     download(filename?: string) {
+        if (this.xhr.responseType !== "blob") {
+            throw Error("Download is only supported for Blob responses");
+        }
         return download(this, this.xhr.response, filename);
     }
 }
