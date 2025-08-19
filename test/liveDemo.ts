@@ -1,19 +1,15 @@
-import HTTP, { HttpResponse } from "../src";
-import { XhrResponse } from "../src/HttpResponse";
-
-const url = "https://petstore.swagger.io/v2/swagger.json";
+import HTTP from "../src";
 
 export default async function () {
     console.log("test/liveDemo.js");
 
+    const json = await HTTP.get(
+        "https://petstore.swagger.io/v2/swagger.json",
+    ).then((res) => res.json());
+    console.log(json);
+
     const http = new HTTP("https://petstore.swagger.io/v2");
-    const res = await http.path("swagger.json").get();
-
-    console.log(res);
-
-    const data = res.json();
-
-    console.log(data);
+    const res = await http.path("swagger.json").get({ responseType: "blob" });
 
     res.download();
 }

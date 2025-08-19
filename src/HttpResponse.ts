@@ -20,7 +20,7 @@ export abstract class HttpResponse {
     abstract json<T>(): T;
     abstract blob(): Blob;
     abstract arrayBuffer(): ArrayBuffer;
-    abstract download(filename?: string): Promise<void>;
+    abstract download(filename?: string): void;
 }
 
 export class XhrResponse extends HttpResponse {
@@ -62,7 +62,7 @@ export class XhrResponse extends HttpResponse {
         if (this.xhr.responseType !== "blob") {
             throw Error("Download is only supported for Blob responses");
         }
-        return download(this, this.xhr.response, filename);
+        download(this, this.xhr.response as Blob, filename);
     }
 }
 
@@ -93,7 +93,9 @@ export class JsonpResponse extends HttpResponse {
     }
 
     blob(): Blob {
-        throw Error("Response is not Blob");
+        return new Blob([this.text()], {
+            type: "application/json;charset=utf-8",
+        });
     }
 
     arrayBuffer(): ArrayBuffer {
@@ -101,6 +103,6 @@ export class JsonpResponse extends HttpResponse {
     }
 
     download(filename?: string) {
-        return download(this, this.data, filename);
+        download(this, this.blob(), filename);
     }
 }

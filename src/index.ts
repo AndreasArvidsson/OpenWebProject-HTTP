@@ -6,3 +6,4 @@ export type {
     HttpParams,
     HttpRequest,
 } from "./types";
+export { downloadBlob } from "./util/download";

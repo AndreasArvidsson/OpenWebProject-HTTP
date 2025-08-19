@@ -1,34 +1,33 @@
-import type Downloadjs from "downloadjs";
 import type { HttpResponse } from "../HttpResponse";
 import { Headers } from "./constants";
 
-let cached: typeof Downloadjs | null = null;
-
-export async function download(
+export function download(
     response: HttpResponse,
-    data: unknown,
+    blob: Blob,
     filename: string | undefined,
-): Promise<void> {
-    const downloadjs = await getDownloadJs();
-
-    downloadjs(data, filename || calcFilename(response));
+) {
+    downloadBlob(blob, filename ?? calcFilename(response));
 }
 
-async function getDownloadJs() {
-    if (cached == null) {
+export function downloadBlob(blob: Blob, filename: string) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = filename;
+    a.style.display = "none";
+    a.addEventListener("click", (e) => e.stopPropagation());
+
+    document.body.appendChild(a);
+
+    requestAnimationFrame(() => {
         try {
-            const { default: downloadjs } = await import(
-                /* webpackChunkName: "downloadjs" */
-                "downloadjs"
-            );
-            cached = downloadjs;
-        } catch {
-            throw new Error(
-                "Download requires the 'downloadjs' package. Install it with 'npm i downloadjs'.",
-            );
+            a.click();
+        } finally {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
-    }
-    return cached;
+    });
 }
 
 function calcFilename(response: HttpResponse): string {

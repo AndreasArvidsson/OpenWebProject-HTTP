@@ -18,7 +18,7 @@ import HTTP from "owp.http";
 ## Example usage
 
 ```ts
-const restBase = new HTTP("http://www.mysite.com/rest", { cache: true });
+const restBase = new HTTP("http://www.mysite.com/rest");
 const userService = restBase.path("management", "users");
 
 userService
@@ -26,7 +26,6 @@ userService
     .then(async (response) => {
         const data = await response.json();
         const contentType = response.header("Content-Type");
-        await response.download();
     })
     .catch((error) => {
         if (error instanceof HttpResponse) {
@@ -34,6 +33,10 @@ userService
         }
         console.error(error);
     });
+
+userService.get({ responseType: "blob" }).then(async (response) => {
+    await response.download();
+});
 ```
 
 ## Static requests
