@@ -16,17 +16,17 @@ export function downloadBlob(blob: Blob, filename: string) {
     a.href = url;
     a.download = filename;
     a.style.display = "none";
-    a.addEventListener("click", (e) => e.stopPropagation());
+    a.addEventListener("click", (e) => e.stopPropagation(), { once: true });
 
     document.body.appendChild(a);
 
+    // Defer the click until the next frame so the element is "settled"
     requestAnimationFrame(() => {
-        try {
-            a.click();
-        } finally {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
+        a.click();
+        document.body.removeChild(a);
+
+        // Revoke the object URL on the next tick to avoid racing with the download
+        setTimeout(() => URL.revokeObjectURL(url), 0);
     });
 }
 

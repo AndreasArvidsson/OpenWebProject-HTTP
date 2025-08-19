@@ -1,7 +1,7 @@
 {
     "name": "owp.http",
     "description": "HTTP client for JavaScript",
-    "version": "4.6.0",
+    "version": "4.6.1",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "files": [
