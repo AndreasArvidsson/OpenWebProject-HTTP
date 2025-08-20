@@ -76,7 +76,6 @@ const promise = http.path("data").jsonp(options);
 | json                   | JSON data payload                    |
 | contentType            | Media type(MIME) for data payload    |
 | responseType           | Type for response data               |
-| cache                  | Set to true to cache responses       |
 | stateChangeInterceptor | State change interceptor callback    |
 | progressInterceptor    | Progress update interceptor callback |
 | requestInterceptor     | Request interceptor callback         |
@@ -191,16 +190,6 @@ Specify response type. Can be used to request binary data
 ```ts
 http.get({ responseType: "blob" }).then((blob: Blob) => {
     // Blob containing binary data
-});
-```
-
-## Cache
-
-Enable cache. Matches method+url and caches response.
-
-```ts
-http.get({ cache: true }).then((cachedResponse: HttpResponse) => {
-    // Response is fetched from cache.
 });
 ```
 

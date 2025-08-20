@@ -1,7 +1,7 @@
 {
     "name": "owp.http",
     "description": "HTTP client for JavaScript",
-    "version": "4.6.1",
+    "version": "5.0.0",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "files": [
@@ -11,7 +11,7 @@
         "build": "rm -fr lib && tsc -p .",
         "test": "tsx test/runTests.ts",
         "start": "tsx test/esbuildTest.ts",
-        "lint": "eslint src",
+        "lint": "eslint src && prettier --check .",
         "prettier": "prettier --write ."
     },
     "keywords": [

@@ -4,13 +4,13 @@ import HTTP from "../src/index";
 describe("Interceptors", () => {
     const http = new HTTP("https://petstore.swagger.io/v2", {
         params: { a: 10, b: null, d: 4 },
-        cache: false,
+        responseType: "blob",
     });
 
     const sub = http.path("swagger.json").options({
         params: { e: 5 },
         headers: {},
-        cache: true,
+        responseType: "json",
     });
 
     before(() => {
@@ -18,7 +18,7 @@ describe("Interceptors", () => {
             params: { a: 1, b: 2, c: 3 },
         });
         HTTP.useOptions({
-            cache: true,
+            responseType: "json",
         });
     });
 
@@ -32,7 +32,7 @@ describe("Interceptors", () => {
                         headers: {},
                         url: "https://petstore.swagger.io/v2/swagger.json",
                         method: "GET",
-                        cache: true,
+                        responseType: "json",
                     });
                     return r;
                 },

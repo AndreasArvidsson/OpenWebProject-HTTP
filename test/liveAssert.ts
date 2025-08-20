@@ -9,7 +9,7 @@ const urlLarge =
     "https://raw.githubusercontent.com/json-iterator/test-data/refs/heads/master/large-file.json";
 
 const testGet = async () => {
-    await HTTP.get(urlGet, { cache: true })
+    await HTTP.get(urlGet)
         .then(async (r) => {
             assert.equals("Get: status", 200, r.status);
             const data = await r.json<any>();
@@ -17,7 +17,7 @@ const testGet = async () => {
         })
         .catch((e) => assert.fail("Get", e));
 
-    await HTTP.get(urlNotFound, { cache: true })
+    await HTTP.get(urlNotFound)
         .then(() => assert.fail("Get: Expected exception"))
         .catch((r) => {
             assert.equals("Get: status", 404, r.status);
@@ -26,7 +26,6 @@ const testGet = async () => {
 
 const testPost = async () => {
     await HTTP.post([url, "post"], {
-        cache: true,
         json: { name: "testPost" },
     })
         .then(async (r) => {
@@ -36,7 +35,7 @@ const testPost = async () => {
         })
         .catch((e) => assert.fail("Post", e));
 
-    await HTTP.post(urlGet, { cache: true })
+    await HTTP.post(urlGet)
         .then(() => assert.fail("Post: Expected exception"))
         .catch((r) => {
             assert.equals("Post: status", 405, r.status);
@@ -45,7 +44,6 @@ const testPost = async () => {
 
 const testPut = async () => {
     await HTTP.put([url, "put"], {
-        cache: true,
         json: { name: "testPut" },
     })
         .then(async (r) => {
@@ -55,7 +53,7 @@ const testPut = async () => {
         })
         .catch((e) => assert.fail("Put", e));
 
-    await HTTP.put(urlGet, { cache: true })
+    await HTTP.put(urlGet)
         .then(() => assert.fail("Put: Expected exception"))
         .catch((r) => {
             assert.equals("Put: status", 405, r.status);
@@ -64,7 +62,6 @@ const testPut = async () => {
 
 const testPatch = async () => {
     await HTTP.patch([url, "patch"], {
-        cache: true,
         json: { name: "testPatch" },
     })
         .then(async (r) => {
@@ -75,7 +72,7 @@ const testPatch = async () => {
         .catch((e) => assert.fail("Patch", e));
 
     // Gives cors errors
-    // await HTTP.patch(getUrl, { cache: true })
+    // await HTTP.patch(getUrl)
     //     .then(() => assert.fail("Patch: Expected exception"))
     //     .catch((r) => {
     //         assert.equals("Patch: status", 405, r.status);
@@ -84,7 +81,6 @@ const testPatch = async () => {
 
 const testDelete = async () => {
     await HTTP.delete([url, "delete"], {
-        cache: true,
         json: { name: "testDelete" },
     })
         .then(async (r) => {
@@ -94,7 +90,7 @@ const testDelete = async () => {
         })
         .catch((e) => assert.fail("Delete", e));
 
-    await HTTP.delete(urlGet, { cache: true })
+    await HTTP.delete(urlGet)
         .then(() => assert.fail("Delete: Expected exception"))
         .catch((r) => {
             assert.equals("Delete: status", 405, r.status);
@@ -103,7 +99,6 @@ const testDelete = async () => {
 
 const testHead = async () => {
     await HTTP.head([url, "head"], {
-        cache: true,
         json: { name: "testHead" },
     })
         .then(async (r) => {
@@ -113,7 +108,7 @@ const testHead = async () => {
         })
         .catch((e) => assert.fail("Head", e));
 
-    await HTTP.head(urlGet, { cache: true })
+    await HTTP.head(urlGet)
         .then(() => assert.fail("Head: Expected exception"))
         .catch((r) => {
             assert.equals("Head: status", 405, r.status);
@@ -123,7 +118,6 @@ const testHead = async () => {
 const testJsonp = async () => {
     await HTTP.jsonp("https://itunes.apple.com/search", {
         params: { term: "a", media: "music", limit: 20 },
-        cache: true,
     })
         .then(async (r) => {
             assert.equals("Jsonp: status", 200, r.status);
@@ -132,9 +126,7 @@ const testJsonp = async () => {
         })
         .catch((e) => assert.fail("Jsonp", e));
 
-    await HTTP.jsonp(urlNotFound, {
-        cache: true,
-    })
+    await HTTP.jsonp(urlNotFound)
         .then(() => assert.fail("Jsonp: Expected exception"))
         .catch((r) => {
             assert.equals("Jsonp: status", 400, r.status);
@@ -172,7 +164,6 @@ const testProgressInterceptor = async () => {
 
 const testRequestInterceptor = async () => {
     await HTTP.get(urlGet, {
-        cache: true,
         requestInterceptor: (r) => {
             assert.equals("url", urlGet, r.url);
             return r;
@@ -189,7 +180,6 @@ const testRequestInterceptor = async () => {
         .catch((e) => assert.fail("testRequestInterceptor1", e));
 
     await HTTP.get(urlGet, {
-        cache: true,
         requestInterceptor: (r) => Promise.resolve(r),
     })
         .then((r) => r.json())
@@ -199,7 +189,6 @@ const testRequestInterceptor = async () => {
         .catch((e) => assert.fail("testRequestInterceptor2", e));
 
     await HTTP.get(urlGet, {
-        cache: true,
         requestInterceptor: () => Promise.reject("Doh!"),
     })
         .then(() => assert.fail("testRequestInterceptor: Expected exception"))

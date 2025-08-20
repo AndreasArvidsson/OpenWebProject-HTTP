@@ -4,7 +4,7 @@ import HTTP from "../src/index";
 describe("Options", () => {
     const http = new HTTP("https://petstore.swagger.io/v2", {
         params: { a: 10, b: null, d: 4 },
-        cache: false,
+        responseType: "blob",
     });
 
     it("HTTP.useOptions()", () => {
@@ -12,24 +12,22 @@ describe("Options", () => {
             params: { a: 1, b: 2, c: 3 },
         });
         HTTP.useOptions({
-            cache: true,
+            responseType: "json",
         });
 
         assert.deepEqual(HTTP.getOptions(), {
             params: { a: 1, b: 2, c: 3 },
             headers: {},
-            cache: true,
+            responseType: "json",
         });
     });
 
     it("HTTP.setOptions()", () => {
         HTTP.setOptions({
-            cache: true,
+            responseType: "json",
         });
 
-        assert.deepEqual(HTTP.getOptions(), {
-            cache: true,
-        });
+        assert.deepEqual(HTTP.getOptions(), { responseType: "json" });
 
         HTTP.setOptions({});
 
@@ -44,7 +42,7 @@ describe("Options", () => {
         assert.deepEqual(http.getOptions(), {
             params: { a: 10, b: null, d: 4 },
             headers: {},
-            cache: false,
+            responseType: "blob",
         });
     });
 
@@ -60,12 +58,12 @@ describe("Options", () => {
         const sub = http.options({
             params: { e: 5 },
             headers: {},
-            cache: true,
+            responseType: "json",
         });
         assert.deepEqual(sub.getOptions(), {
             params: { a: 10, b: null, d: 4, e: 5 },
             headers: {},
-            cache: true,
+            responseType: "json",
         });
     });
 });

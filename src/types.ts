@@ -3,7 +3,6 @@ import type { HttpResponse } from "./HttpResponse";
 export interface HttpOptions {
     readonly params?: HttpParams;
     readonly headers?: HttpHeaders;
-    readonly cache?: boolean;
     readonly data?: string;
     readonly json?: Json;
     readonly contentType?: string;
